@@ -286,6 +286,7 @@ pre{background:var(--bg);border:1px solid var(--border);border-radius:var(--rad)
       <span class="bdg">하루 5차시</span>
       <span class="bdg">2인 1조</span>
       <span class="bdg">티처블머신 + 헥사보드</span>
+      <span class="bdg">🔒 이름 보호</span>
     </div>
   </div>
   <div class="card-grid">
@@ -1153,6 +1154,15 @@ let WS_URL = 'ws://' + getSavedServerIP() + ':3000';
 /* ══════════════════════════════════════════
    유틸
 ══════════════════════════════════════════ */
+/* ── 이름 마스킹 (화면 표시용 · DB/엑셀/세특 생성에는 실명 사용) ── */
+function maskName(name) {
+  if (!name) return '';
+  const n = String(name).trim();
+  if (n.length <= 1) return n;
+  if (n.length === 2) return n[0] + '*';                       // 김수 → 김*
+  return n[0] + '*'.repeat(n.length - 2) + n[n.length - 1];    // 김민수 → 김*수, 남궁민수 → 남**수
+}
+console.log('[이름 보호] 마스킹 적용 버전 2026-10-14');
 function showLoading(m){ }
 function hideLoading(){ }
 function updateLabels() {
@@ -1534,15 +1544,15 @@ function renderOverview() {
   submissions.forEach((s, i) => {
     const h1 = s.ref1 && s.ref1.trim(), h2 = s.ref2 && s.ref2.trim();
     const badge1 = h1
-      ? '<span class="s-ok">' + (s.n1||'1') + ' 완료</span>'
-      : '<span class="s-no">' + (s.n1||'1') + ' 미제출</span>';
+      ? '<span class="s-ok">' + maskName(s.n1||'1') + ' 완료</span>'
+      : '<span class="s-no">' + maskName(s.n1||'1') + ' 미제출</span>';
     const badge2 = h2
-      ? '<span class="s-ok">' + (s.n2||'2') + ' 완료</span>'
-      : '<span class="s-no">' + (s.n2||'2') + ' 미제출</span>';
+      ? '<span class="s-ok">' + maskName(s.n2||'2') + ' 완료</span>'
+      : '<span class="s-no">' + maskName(s.n2||'2') + ' 미제출</span>';
     const tr = document.createElement('tr');
     tr.innerHTML = '<td>' + (i+1) + '</td>'
-      + '<td><strong>' + (s.n1||'-') + '</strong></td>'
-      + '<td><strong>' + (s.n2||'-') + '</strong></td>'
+      + '<td><strong>' + (maskName(s.n1)||'-') + '</strong></td>'
+      + '<td><strong>' + (maskName(s.n2)||'-') + '</strong></td>'
       + '<td>' + (s.id1||'-') + '</td>'
       + '<td>' + (s.id2||'-') + '</td>'
       + '<td>' + (s.c1||'-') + '</td>'
@@ -1550,7 +1560,7 @@ function renderOverview() {
       + '<td style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">'
       + badge1 + badge2
       + '<button class="vbtn" onclick="viewTeam(\'' + s.id1 + '\')">보기</button>'
-      + '<button class="vbtn" style="color:var(--sport);border-color:var(--sport)" onclick="deleteSubmission(\'' + s.id1 + '\',\'' + (s.n1||'') + '\',\'' + (s.n2||'') + '\')">삭제</button></td>';
+      + '<button class="vbtn" style="color:var(--sport);border-color:var(--sport)" onclick="deleteSubmission(\'' + s.id1 + '\',\'' + maskName(s.n1) + '\',\'' + maskName(s.n2) + '\')">삭제</button></td>';
     body.appendChild(tr);
   });
 }
@@ -1560,7 +1570,7 @@ function renderTeamSel() {
   submissions.forEach(s => {
     const o = document.createElement('option');
     o.value = s.id1;
-    o.textContent = (s.id1||'?')+'_'+(s.n1||'?')+' & '+(s.id2||'?')+'_'+(s.n2||'?');
+    o.textContent = (s.id1||'?')+'_'+(maskName(s.n1)||'?')+' & '+(s.id2||'?')+'_'+(maskName(s.n2)||'?');
     sel.appendChild(o);
   });
 }
@@ -1581,10 +1591,10 @@ function showTeamDetail() {
   header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px';
   header.innerHTML = '<div style="display:flex;gap:12px;flex-wrap:wrap">'
     + '<div style="display:flex;align-items:center;gap:7px"><span class="mtag m1" style="font-size:11px">팀원1</span>'
-    + '<span style="font-size:13px;font-weight:700">' + (s.n1||'') + '</span>'
+    + '<span style="font-size:13px;font-weight:700">' + maskName(s.n1) + '</span>'
     + '<span style="font-size:11px;color:var(--text3)">' + (s.id1||'') + '</span></div>'
     + '<div style="display:flex;align-items:center;gap:7px"><span class="mtag m2" style="font-size:11px">팀원2</span>'
-    + '<span style="font-size:13px;font-weight:700">' + (s.n2||'') + '</span>'
+    + '<span style="font-size:13px;font-weight:700">' + maskName(s.n2) + '</span>'
     + '<span style="font-size:11px;color:var(--text3)">' + (s.id2||'') + '</span></div>'
     + '</div>';
 
@@ -1592,7 +1602,7 @@ function showTeamDetail() {
   delBtn.className = 'abtn';
   delBtn.style.cssText = 'color:var(--sport);border-color:var(--sport);font-size:12px;flex-shrink:0';
   delBtn.innerHTML = '<i class="ti ti-trash"></i> 활동지 삭제';
-  delBtn.addEventListener('click', () => deleteSubmission(s.id1, s.n1, s.n2));
+  delBtn.addEventListener('click', () => deleteSubmission(s.id1, maskName(s.n1), maskName(s.n2)));
   header.appendChild(delBtn);
   card.appendChild(header);
 
@@ -1619,7 +1629,7 @@ function showTeamDetail() {
   [['m1', s.n1, s.ref1], ['m2', s.n2, s.ref2]].forEach(([tag, name, ref]) => {
     const mb = document.createElement('div');
     mb.className = 'mem-block';
-    mb.innerHTML = '<div class="mem-hdr"><span class="mtag ' + tag + '">' + (name||'') + ' 소감문</span></div>'
+    mb.innerHTML = '<div class="mem-hdr"><span class="mtag ' + tag + '">' + maskName(name) + ' 소감문</span></div>'
       + '<div style="font-size:13px;line-height:1.65">' + (ref || '<span style="color:var(--text3)">미작성</span>') + '</div>';
     card.appendChild(mb);
   });
@@ -1640,7 +1650,7 @@ function renderRfList(f) {
   data.forEach(s=>{
     const h1=s.ref1&&s.ref1.trim(),h2=s.ref2&&s.ref2.trim();
     const div=document.createElement('div'); div.className='card'; div.style.marginBottom='11px';
-    div.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:11px;flex-wrap:wrap;align-items:center"><span class="mtag m1" style="font-size:11px">${s.n1||'팀원1'}</span><span class="mtag m2" style="font-size:11px">${s.n2||'팀원2'}</span><span style="font-size:11px;color:var(--text2)">${s.c1||''}반</span>${h1&&h2?'<span class="s-ok" style="font-size:10px">양쪽 완료</span>':h1?`<span class="s-ok" style="font-size:10px">${s.n1} 완료</span><span class="s-no" style="font-size:10px">${s.n2} 미제출</span>`:h2?`<span class="s-no" style="font-size:10px">${s.n1} 미제출</span><span class="s-ok" style="font-size:10px">${s.n2} 완료</span>`:'<span class="s-no" style="font-size:10px">양쪽 미제출</span>'}</div><div class="mem-block"><div class="mem-hdr"><span class="mtag m1">${s.n1||'팀원1'} 소감문</span></div><div style="font-size:13px;line-height:1.65">${s.ref1||'<span style="color:var(--text2);font-size:12px">미제출</span>'}</div></div><div class="mem-block"><div class="mem-hdr"><span class="mtag m2">${s.n2||'팀원2'} 소감문</span></div><div style="font-size:13px;line-height:1.65">${s.ref2||'<span style="color:var(--text2);font-size:12px">미제출</span>'}</div></div>`;
+    div.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:11px;flex-wrap:wrap;align-items:center"><span class="mtag m1" style="font-size:11px">${maskName(s.n1)||'팀원1'}</span><span class="mtag m2" style="font-size:11px">${maskName(s.n2)||'팀원2'}</span><span style="font-size:11px;color:var(--text2)">${s.c1||''}반</span>${h1&&h2?'<span class="s-ok" style="font-size:10px">양쪽 완료</span>':h1?`<span class="s-ok" style="font-size:10px">${maskName(s.n1)} 완료</span><span class="s-no" style="font-size:10px">${maskName(s.n2)} 미제출</span>`:h2?`<span class="s-no" style="font-size:10px">${maskName(s.n1)} 미제출</span><span class="s-ok" style="font-size:10px">${maskName(s.n2)} 완료</span>`:'<span class="s-no" style="font-size:10px">양쪽 미제출</span>'}</div><div class="mem-block"><div class="mem-hdr"><span class="mtag m1">${maskName(s.n1)||'팀원1'} 소감문</span></div><div style="font-size:13px;line-height:1.65">${s.ref1||'<span style="color:var(--text2);font-size:12px">미제출</span>'}</div></div><div class="mem-block"><div class="mem-hdr"><span class="mtag m2">${maskName(s.n2)||'팀원2'} 소감문</span></div><div style="font-size:13px;line-height:1.65">${s.ref2||'<span style="color:var(--text2);font-size:12px">미제출</span>'}</div></div>`;
     list.appendChild(div);
   });
 }
@@ -1669,7 +1679,7 @@ function renderSkList() {
       const hdr = document.createElement('div');
       hdr.className = 'sk-hdr';
       hdr.innerHTML = '<div style="display:flex;align-items:center;gap:8px">'
-        + '<span class="mtag ' + tag + '" style="font-size:12px">' + (name||('팀원'+m)) + '</span>'
+        + '<span class="mtag ' + tag + '" style="font-size:12px">' + (maskName(name)||('팀원'+m)) + '</span>'
         + '<span style="font-size:12px;color:var(--text3)">' + (sid||'') + '</span>'
         + '</div>'
         + '<div style="display:flex;align-items:center;gap:7px">'
@@ -1959,15 +1969,6 @@ async function resetQs(){
 /* ── 활동지 탭 관리 ── */
 let wsEditId = '';
 let wsEditNames = { n1: '', n2: '' };   // 수정 화면용 원래 이름 보관
-
-/* ── 이름 마스킹 (개인정보 보호) ── */
-function maskName(name) {
-  if (!name) return '';
-  const n = String(name).trim();
-  if (n.length <= 1) return n;
-  if (n.length === 2) return n[0] + '*';                       // 김수 → 김*
-  return n[0] + '*'.repeat(n.length - 2) + n[n.length - 1];    // 김민수 → 김*수
-}
 
 function wsShowTab(tab, btn) {
   // 탭 버튼 활성화
@@ -2585,7 +2586,7 @@ async function genAllSeteuk() {
   for (const s of submissions) {
     for (const m of [1, 2]) {
       const genBtn = document.createElement('button'); // 더미 버튼
-      statusEl.textContent = (done+1) + '/' + total + ' 생성 중 — ' + (m===1?s.n1:s.n2) + ' (' + (m===1?s.id1:s.id2) + ')';
+      statusEl.textContent = (done+1) + '/' + total + ' 생성 중 — ' + maskName(m===1?s.n1:s.n2) + ' (' + (m===1?s.id1:s.id2) + ')';
       await genSeteuk(s.id1, m, genBtn);
       done++;
       await new Promise(r => setTimeout(r, 500)); // API 과부하 방지
@@ -2961,7 +2962,7 @@ function renderRoster() {
   list.innerHTML = rosterStudents.map((s, i) =>
     '<div style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--bg);border-radius:var(--rad);font-size:12px">'
     + '<span style="font-weight:600;color:var(--text3);font-size:10px;min-width:36px">' + s.id + '</span>'
-    + '<span style="color:var(--text);font-weight:500">' + s.name + '</span>'
+    + '<span style="color:var(--text);font-weight:500">' + maskName(s.name) + '</span>'
     + '<button onclick="removeStudent('+i+')" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px" title="삭제">×</button>'
     + '</div>'
   ).join('');
@@ -3058,7 +3059,7 @@ function renderTeams() {
       item.style.cssText = 'display:flex;align-items:center;gap:6px;padding:7px 10px;background:var(--card);border:1px solid var(--border);border-radius:var(--rad);margin-bottom:5px;cursor:grab;user-select:none;transition:all .15s;font-size:12px';
       item.innerHTML = '<i class="ti ti-grip-vertical" style="font-size:14px;color:var(--text3);cursor:grab"></i>'
         + '<span style="color:var(--text3);font-size:10px;min-width:36px">'+s.id+'</span>'
-        + '<span style="font-weight:600;flex:1">'+s.name+'</span>';
+        + '<span style="font-weight:600;flex:1">'+maskName(s.name)+'</span>';
 
       // 드래그 이벤트
       item.addEventListener('dragstart', function(e) {
