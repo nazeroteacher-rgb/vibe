@@ -1,0 +1,3306 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스포츠 생활·빅데이터 분석 융합 수업</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@500;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --primary:#0066FF;
+  --primary-dark:#0047CC;
+  --primary-light:#E8F0FF;
+  --accent:#00C49A;
+  --accent-light:#E6FAF5;
+  --sport:#FF4757;
+  --sport-light:#FFF0F1;
+  --data:#7B5CFA;
+  --data-light:#F3F0FF;
+  --bg:#FAF8F3;
+  --card:#FFFFFF;
+  --border:rgba(0,0,0,0.08);
+  --border-strong:rgba(0,0,0,0.16);
+  --text:#0F172A;
+  --text2:#475569;
+  --text3:#94A3B8;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg:0 8px 32px rgba(0,102,255,0.12);
+  --rad:10px;
+  --rad-lg:16px;
+  --rad-xl:20px;
+}
+
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+#lov{position:fixed;inset:0;background:rgba(10,15,40,0.72);backdrop-filter:blur(4px);z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#lov.show{display:flex}
+.spinner{width:44px;height:44px;border:3px solid rgba(255,255,255,0.15);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#lov-text{color:#fff;font-size:14px;font-weight:500;letter-spacing:.02em}
+
+/* ── 상단바 ── */
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;flex-wrap:wrap;box-shadow:0 1px 0 var(--border)}
+.tb-title{font-size:14px;font-weight:700;color:var(--text)}
+.tb-sub{font-size:11px;color:var(--text3)}
+.back-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid var(--border-strong);border-radius:var(--rad);background:transparent;cursor:pointer;font-size:12px;color:var(--text2);font-family:inherit;white-space:nowrap;transition:all .15s}
+.back-btn:hover{background:var(--bg);color:var(--text)}
+.tb-actions{margin-left:auto;display:flex;gap:7px;flex-shrink:0}
+.abtn{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border:1px solid var(--border-strong);border-radius:var(--rad);background:var(--card);cursor:pointer;font-size:12px;color:var(--text);font-family:inherit;white-space:nowrap;transition:all .15s;font-weight:500}
+.abtn:hover{background:var(--bg);border-color:var(--primary);color:var(--primary)}
+.abtn.p{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 2px 8px rgba(0,102,255,0.25)}
+.abtn.p:hover{background:var(--primary-dark);box-shadow:0 4px 12px rgba(0,102,255,0.35)}
+.abtn.green{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px rgba(0,196,154,0.25)}
+.abtn.green:hover{opacity:.9}
+.abtn.red{background:var(--sport);color:#fff;border-color:var(--sport)}
+.abtn.red:hover{opacity:.9}
+.abtn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+
+/* ── 홈 ── */
+#home{background:linear-gradient(160deg,#FAF8F3 0%,#F5F0E8 50%,#EEE8DA 100%);min-height:100vh}
+
+.hero{padding:48px 20px 32px;text-align:center;position:relative}
+.hero::before{display:none}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:999px;background:rgba(0,102,255,0.08);border:1px solid rgba(0,102,255,0.2);color:#0047CC;font-size:12px;font-weight:500;letter-spacing:.06em;margin-bottom:20px}
+.hero-title{font-family:'Space Grotesk','Noto Sans KR',sans-serif;font-size:38px;font-weight:900;color:#1A1A2E;line-height:1.25;margin-bottom:12px;letter-spacing:-.03em}
+.hero-title span.highlight{color:#00C49A}
+.hero-sub{font-size:16px;color:#5C5C7A;line-height:1.6;margin-bottom:20px;font-weight:500}
+.badge-row{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}
+.bdg{padding:4px 12px;border-radius:999px;font-size:11px;font-weight:500;background:rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.1);color:#5C5C7A}
+
+/* 홈 카드 그리드 */
+.card-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:0 18px 36px;max-width:520px;margin:0 auto;width:100%}
+.nc{background:rgba(255,255,255,0.75);border:1px solid rgba(0,0,0,0.08);border-radius:var(--rad-xl);padding:20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:16px;backdrop-filter:blur(8px);box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.nc:hover{background:rgba(255,255,255,0.95);border-color:var(--primary);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,102,255,0.12)}
+.ni{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ni.g{background:linear-gradient(135deg,#00C49A,#00A87E)}
+.ni.b{background:linear-gradient(135deg,#0066FF,#0047CC)}
+.ni.a{background:linear-gradient(135deg,#FF8C00,#FF6B00)}
+.ni.r{background:linear-gradient(135deg,#FF4757,#CC2233)}
+.nc-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px}
+.nc-desc{font-size:11px;color:var(--text3);line-height:1.5}
+.nc-arr{margin-left:auto;color:var(--text3);font-size:18px;flex-shrink:0}
+
+/* ── 콘텐츠 공통 ── */
+.content{padding:18px;max-width:720px;margin:0 auto;width:100%}
+.sec-label{font-size:10px;font-weight:700;color:var(--text3);margin:18px 0 8px;letter-spacing:.08em;text-transform:uppercase}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad-lg);padding:18px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card-accent{border-left:3px solid var(--primary)}
+
+/* ── 폼 ── */
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fl{font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.02em}
+.fi{padding:9px 12px;border:1.5px solid var(--border-strong);border-radius:var(--rad);font-size:13px;font-family:inherit;background:var(--card);color:var(--text);transition:border-color .15s;width:100%}
+.fi:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,102,255,0.1)}
+.fta{padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--rad);font-size:13px;font-family:inherit;background:var(--card);color:var(--text);resize:vertical;min-height:88px;line-height:1.65;width:100%;transition:border-color .15s}
+.fta:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,102,255,0.1)}
+.qt{font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;color:var(--text)}
+.qn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* ── 메시지 ── */
+.smsg{padding:10px 14px;border-radius:var(--rad);font-size:12px;margin-top:10px;display:none;font-weight:500}
+.smsg.ok{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;display:block}
+.smsg.err{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;display:block}
+.smsg.info{background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE;display:block}
+
+/* ── 팀 구분 ── */
+.team-div{display:flex;align-items:center;gap:12px;margin:8px 0 16px}
+.team-div-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+.team-div-label{font-size:11px;font-weight:600;color:var(--text3);white-space:nowrap;letter-spacing:.04em}
+.mem-block{border:1.5px solid var(--border);border-radius:var(--rad-lg);padding:14px;margin-bottom:10px;transition:border-color .15s}
+.mem-block:focus-within{border-color:var(--primary)}
+.mem-hdr{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.mtag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;letter-spacing:.02em}
+.mtag.m1{background:var(--primary-light);color:var(--primary-dark)}
+.mtag.m2{background:var(--accent-light);color:#047857}
+
+/* ── 수업 자료 ── */
+.mat-item{background:var(--card);border:1px solid var(--border);border-radius:var(--rad-lg);padding:14px;display:flex;align-items:center;gap:13px;margin-bottom:9px;box-shadow:var(--shadow);transition:all .15s}
+.mat-item:hover{border-color:var(--primary);box-shadow:var(--shadow-lg)}
+.mat-icon{width:40px;height:40px;border-radius:12px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.mat-name{font-size:13px;font-weight:600;color:var(--text)}
+.mat-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.dl-btn{padding:6px 13px;border:1.5px solid var(--primary);border-radius:var(--rad);background:transparent;cursor:pointer;font-size:12px;font-family:inherit;color:var(--primary);display:flex;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0;font-weight:500;transition:all .15s}
+.dl-btn:hover{background:var(--primary);color:#fff}
+
+/* ── 교사 탭 ── */
+.t-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--card);padding:0 18px;overflow-x:auto;gap:0}
+.t-tab{padding:12px 16px;font-size:12px;font-weight:500;background:transparent;border:none;border-bottom:2.5px solid transparent;cursor:pointer;font-family:inherit;color:var(--text3);white-space:nowrap;transition:all .15s}
+.t-tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:700}
+.t-tab:hover:not(.active){color:var(--text);background:var(--bg)}
+.t-content{padding:18px;max-width:820px;margin:0 auto;width:100%}
+.t-content.hidden{display:none}
+
+/* ── 통계 카드 ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad-lg);padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card:nth-child(1)::before{background:linear-gradient(90deg,var(--primary),var(--data))}
+.stat-card:nth-child(2)::before{background:linear-gradient(90deg,var(--accent),#00A87E)}
+.stat-card:nth-child(3)::before{background:linear-gradient(90deg,var(--sport),#FF6B00)}
+.stat-card:nth-child(4)::before{background:linear-gradient(90deg,var(--data),var(--primary))}
+.stat-label{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;letter-spacing:.02em}
+.stat-val{font-size:26px;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif}
+
+/* ── 테이블 ── */
+.stbl{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.stbl th{text-align:left;padding:9px 10px;font-size:10px;font-weight:700;color:var(--text3);border-bottom:1px solid var(--border);letter-spacing:.04em;text-transform:uppercase}
+.stbl td{padding:10px 10px;border-bottom:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stbl tr:hover td{background:var(--bg)}
+.s-ok{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:600;background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0}
+.s-no{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:500;background:var(--bg);color:var(--text3);border:1px solid var(--border)}
+.vbtn{padding:4px 10px;border:1.5px solid var(--border-strong);border-radius:var(--rad);background:transparent;cursor:pointer;font-size:11px;font-family:inherit;color:var(--text);font-weight:500;transition:all .15s}
+.vbtn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+
+/* ── 답변 블록 ── */
+.ans-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--rad);padding:13px;margin-bottom:10px}
+.ans-q{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:5px;letter-spacing:.02em}
+.ans-a{font-size:13px;line-height:1.65;color:var(--text)}
+
+/* ── AI 선택 ── */
+.ai-sel{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+.ai-chip{padding:6px 16px;border:1.5px solid var(--border-strong);border-radius:999px;font-size:12px;cursor:pointer;font-family:inherit;background:var(--card);color:var(--text);font-weight:500;transition:all .15s}
+.ai-chip.sel{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 2px 8px rgba(0,102,255,0.3)}
+.ai-chip:hover:not(.sel){border-color:var(--primary);color:var(--primary)}
+
+/* ── 세특 카드 ── */
+.sk-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad-lg);padding:16px;margin-bottom:11px;box-shadow:var(--shadow)}
+.sk-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.gen-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border:1.5px solid var(--accent);border-radius:var(--rad);background:transparent;cursor:pointer;font-size:12px;font-family:inherit;color:var(--accent);font-weight:600;transition:all .15s}
+.gen-btn:hover{background:var(--accent);color:#fff}
+.gen-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── 질문 편집 ── */
+.qe-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--rad);padding:11px;margin-bottom:7px;display:flex;align-items:flex-start;gap:8px}
+.qe-num{font-size:10px;font-weight:700;color:var(--primary);padding-top:4px;min-width:24px;letter-spacing:.02em}
+.qe-in{flex:1;padding:7px 11px;border:1.5px solid var(--border-strong);border-radius:var(--rad);font-size:12px;font-family:inherit;background:var(--card);color:var(--text);transition:border-color .15s}
+.qe-in:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,102,255,0.1)}
+.qe-del{padding:5px 8px;border:1.5px solid var(--border-strong);border-radius:var(--rad);background:transparent;cursor:pointer;font-size:14px;flex-shrink:0;color:var(--text3);transition:all .15s}
+.qe-del:hover{background:#FEF2F2;color:#991B1B;border-color:#FECACA}
+.add-q{display:flex;align-items:center;gap:6px;padding:9px 14px;border:1.5px dashed var(--border-strong);border-radius:var(--rad);background:transparent;cursor:pointer;font-size:12px;font-family:inherit;color:var(--text3);width:100%;justify-content:center;margin-top:4px;font-weight:500;transition:all .15s}
+.add-q:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+
+/* ── 엑셀 버튼 ── */
+.excel-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border:1.5px solid #22C55E;border-radius:var(--rad);background:var(--card);cursor:pointer;font-size:12px;font-family:inherit;color:#16A34A;font-weight:600;transition:all .15s}
+.excel-btn:hover{background:#22C55E;color:#fff}
+
+/* ── 로그인 ── */
+.lw{display:flex;align-items:center;justify-content:center;flex:1;padding:40px 20px;background:var(--bg)}
+.lcard{background:var(--card);border:1px solid var(--border);border-radius:var(--rad-xl);padding:32px;max-width:340px;width:100%;text-align:center;box-shadow:var(--shadow-lg)}
+.lcard-icon{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--primary),var(--data));color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+
+/* ── 빈 상태 ── */
+.empty-st{text-align:center;padding:48px 20px;color:var(--text3)}
+.empty-st .empty-icon{font-size:40px;margin-bottom:12px;opacity:.5}
+.empty-st p{font-size:13px}
+
+/* ── 소감문 현황 ── */
+.sb-conn-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--rad);font-size:12px;margin-bottom:12px;font-weight:500}
+.sb-conn-bar.ok{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0}
+.sb-conn-bar.no{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+.sb-conn-bar.warn{background:#FFFBEB;color:#92400E;border:1px solid #FDE68A}
+code{background:var(--bg);padding:1px 6px;border-radius:5px;font-size:11px;font-family:monospace;border:1px solid var(--border)}
+pre{background:var(--bg);border:1px solid var(--border);border-radius:var(--rad);padding:14px;font-size:11px;overflow-x:auto;color:var(--text);line-height:1.7;margin:8px 0;font-family:monospace}
+
+/* ── 웹캠 ── */
+.cam-wrap{position:relative;width:100%;background:#000;border-radius:var(--rad-lg);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow-lg)}
+.cam-wrap video,.cam-wrap canvas{width:100%;display:block;min-height:240px;background:#111;object-fit:contain}
+.cam-badge{position:absolute;top:12px;left:12px;padding:5px 12px;border-radius:999px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px;backdrop-filter:blur(8px)}
+.cam-badge.live{background:rgba(239,68,68,0.9);color:#fff}
+.cam-badge.off{background:rgba(0,0,0,0.5);color:rgba(255,255,255,0.7)}
+.cam-dot{width:7px;height:7px;border-radius:50%;background:#fff;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.conn-status{padding:12px 16px;border-radius:var(--rad);font-size:13px;display:flex;align-items:center;gap:9px;margin-bottom:12px;font-weight:500}
+.conn-status.waiting{background:var(--bg);color:var(--text2);border:1px solid var(--border)}
+.conn-status.connected{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0}
+.conn-status.error{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+.zoom-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.zoom-btn{width:34px;height:34px;border:1.5px solid var(--border-strong);border-radius:var(--rad);background:var(--card);cursor:pointer;font-size:17px;color:var(--text);display:flex;align-items:center;justify-content:center;transition:all .15s}
+.zoom-btn:hover{border-color:var(--primary);color:var(--primary)}
+.info-box{background:var(--primary-light);border:1px solid rgba(0,102,255,0.15);border-radius:var(--rad);padding:14px;margin-bottom:13px;font-size:12px;line-height:1.75;color:#1E3A7A}
+.info-box strong{color:var(--primary-dark)}
+
+/* ── 활동지 모드 카드 ── */
+.ws-mode-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad-lg);padding:18px;cursor:pointer;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);transition:all .18s}
+.ws-mode-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.ws-mode-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;flex-shrink:0}
+.ws-mode-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px}
+.ws-mode-desc{font-size:12px;color:var(--text3);line-height:1.4}
+
+/* ── 활동지 메뉴 버튼 ── */
+.ws-menu-btn{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--rad-lg);padding:18px;cursor:pointer;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);transition:all .18s;font-family:inherit;text-align:left}
+.ws-menu-btn:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.ws-menu-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;flex-shrink:0}
+.ws-menu-text{flex:1}
+.ws-menu-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px}
+.ws-menu-desc{font-size:12px;color:var(--text3);line-height:1.4}
+.ws-menu-arr{color:var(--text3);font-size:18px;flex-shrink:0}
+/* 조회 결과 카드 */
+.view-result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad-lg);padding:18px;box-shadow:var(--shadow)}
+.view-result-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.view-avatar{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#0066FF,#0047CC);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+
+/* ── 활동지 탭 바 ── */
+.ws-tab-bar{display:flex;background:var(--card);border-bottom:1px solid var(--border);padding:0 18px}
+.ws-tab{flex:1;padding:13px 16px;font-size:13px;font-weight:500;background:transparent;border:none;border-bottom:2.5px solid transparent;cursor:pointer;font-family:inherit;color:var(--text3);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;max-width:200px}
+.ws-tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:700}
+.ws-tab:hover:not(.active){color:var(--text);background:var(--bg)}
+/* 조회 결과 */
+.view-result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad-lg);padding:18px;box-shadow:var(--shadow)}
+.view-result-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.view-avatar{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+
+/* ── 세특 카드 좌우 분할 ── */
+.sk-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--rad-lg);margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden}
+.sk-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--border)}
+.sk-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.sk-left{padding:16px;border-right:1px solid var(--border)}
+.sk-right{padding:16px;display:flex;flex-direction:column}
+.sk-section-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;margin-bottom:6px}
+.sk-qblock{background:var(--bg);border-radius:var(--rad);padding:9px 11px;margin-bottom:7px}
+.sk-qlabel{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px}
+.sk-qanswer{font-size:12px;color:var(--text);line-height:1.6}
+@media(max-width:680px){.sk-body{grid-template-columns:1fr}.sk-left{border-right:none;border-bottom:1px solid var(--border)}}
+
+/* ── 드래그앤드롭 팀 구성 ── */
+.student-drag-item:hover { border-color:var(--primary) !important; background:var(--primary-light) !important; }
+.student-drag-item:active { cursor:grabbing !important; }
+.team-drop-zone.drag-over { border-color:var(--primary) !important; background:var(--primary-light) !important; }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-overlay" style="display:none!important"><div class="spinner"></div><p id="loading-text">로딩 중...</p></div>
+
+<!-- HOME -->
+<div id="home" class="screen active">
+  <div class="hero">
+    <div class="hero-title">맞춤형 맨몸 운동 분석<br><span class="highlight">인공지능 만들기</span></div>
+    <div class="hero-sub">내 몸의 데이터로 직접 훈련시키는 AI 운동 코치</div>
+    <div class="badge-row">
+      <span class="bdg">하루 5차시</span>
+      <span class="bdg">2인 1조</span>
+      <span class="bdg">티처블머신 + 헥사보드</span>
+    </div>
+  </div>
+  <div class="card-grid">
+    <div class="nc" onclick="go('materials')">
+      <div class="ni g"><i class="ti ti-file-download"></i></div>
+      <div><div class="nc-name">수업 자료</div><div class="nc-desc">차시별 학습 자료, 데이터 수집 가이드, 헥사보드 매뉴얼</div></div>
+      <i class="ti ti-chevron-right nc-arr"></i>
+    </div>
+    <div class="nc" onclick="go('worksheet')">
+      <div class="ni b"><i class="ti ti-pencil"></i></div>
+      <div><div class="nc-name">수업 활동지 작성</div><div class="nc-desc">팀 활동 기록, 모델 분석 결과, 개인 성찰 소감문 제출</div></div>
+      <i class="ti ti-chevron-right nc-arr"></i>
+    </div>
+    <div class="nc" onclick="goViewer()">
+      <div class="ni r"><i class="ti ti-video"></i></div>
+      <div><div class="nc-name">교사 화면 보기</div><div class="nc-desc">선생님 웹캠 화면을 실시간으로 시청 (WebRTC)</div></div>
+      <i class="ti ti-chevron-right nc-arr"></i>
+    </div>
+    <div class="nc" onclick="go('teacher-login')">
+      <div class="ni a"><i class="ti ti-shield-lock"></i></div>
+      <div><div class="nc-name">교사용 관리</div><div class="nc-desc">제출 현황 · 소감문 · 세특 생성 · 화면 방송</div></div>
+      <i class="ti ti-chevron-right nc-arr"></i>
+    </div>
+  </div>
+</div>
+
+<!-- MATERIALS -->
+<div id="materials" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('home')"><i class="ti ti-arrow-left"></i> 홈</button>
+    <div><div class="tb-title">수업 자료</div></div>
+    <div class="tb-actions">
+      <button class="abtn" onclick="loadMaterials()"><i class="ti ti-refresh"></i> 새로고침</button>
+    </div>
+  </div>
+  <div class="content">
+    <div id="mat-list">
+      <div class="empty-st"><div class="empty-icon">📂</div><p>자료를 불러오는 중...</p></div>
+    </div>
+
+    <!-- 이지블록스 바로가기 -->
+    <div style="margin-top:16px">
+      <a href="https://easyblocks.kr/" target="_blank"
+        style="display:flex;align-items:center;gap:14px;background:var(--card);border:1.5px solid var(--primary);border-radius:var(--rad-lg);padding:16px 18px;text-decoration:none;box-shadow:var(--shadow);transition:all .18s"
+        onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(0,102,255,0.15)'"
+        onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+        <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#0066FF,#0047CC);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="ti ti-blocks" style="font-size:22px;color:#fff"></i>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px">이지블록스 바로가기</div>
+          <div style="font-size:12px;color:var(--text3)">easyblocks.kr — 블록 코딩 플랫폼 새 창으로 열기</div>
+        </div>
+        <i class="ti ti-external-link" style="font-size:18px;color:var(--primary);flex-shrink:0"></i>
+      </a>
+    </div>
+
+    <!-- 티처블 머신 바로가기 -->
+    <div style="margin-top:10px">
+      <a href="https://teachablemachine.withgoogle.com/" target="_blank"
+        style="display:flex;align-items:center;gap:14px;background:var(--card);border:1.5px solid #00C49A;border-radius:var(--rad-lg);padding:16px 18px;text-decoration:none;box-shadow:var(--shadow);transition:all .18s"
+        onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(0,196,154,0.15)'"
+        onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+        <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#00C49A,#00957A);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="ti ti-robot" style="font-size:22px;color:#fff"></i>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px">티처블 머신 바로가기</div>
+          <div style="font-size:12px;color:var(--text3)">teachablemachine.withgoogle.com — AI 모델 학습 플랫폼</div>
+        </div>
+        <i class="ti ti-external-link" style="font-size:18px;color:#00C49A;flex-shrink:0"></i>
+      </a>
+    </div>
+  </div>
+</div>
+<!-- STUDENT VIEWER -->
+<div id="worksheet" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('home')"><i class="ti ti-arrow-left"></i> 홈</button>
+    <div><div class="tb-title">수업 활동지</div></div>
+  </div>
+
+  <!-- 탭 선택 바 -->
+  <div class="ws-tab-bar">
+    <button class="ws-tab active" id="ws-tab-write" onclick="wsShowTab('write',this)">
+      <i class="ti ti-pencil-plus"></i> 활동지 작성
+    </button>
+    <button class="ws-tab" id="ws-tab-view" onclick="wsShowTab('view',this)">
+      <i class="ti ti-search"></i> 활동지 조회
+    </button>
+  </div>
+
+  <!-- ① 작성 탭 -->
+  <div id="ws-panel-write" class="content">
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px">
+        <i class="ti ti-users" style="font-size:15px;color:var(--primary)"></i>팀 정보 입력
+      </div>
+      <div class="mem-block">
+        <div class="mem-hdr"><span class="mtag m1">팀원 1</span><span style="font-size:11px;color:var(--text3)">(대표 입력자)</span></div>
+        <div class="frow">
+          <div class="fg"><label class="fl">이름</label><input class="fi" id="ws-n1" type="text" placeholder="홍길동" oninput="updateLabels()"></div>
+          <div class="fg"><label class="fl">학번</label><input class="fi" id="ws-id1" type="text" placeholder="1111"></div>
+        </div>
+      </div>
+      <div class="mem-block">
+        <div class="mem-hdr"><span class="mtag m2">팀원 2</span></div>
+        <div class="frow">
+          <div class="fg"><label class="fl">이름</label><input class="fi" id="ws-n2" type="text" placeholder="김철수" oninput="updateLabels()"></div>
+          <div class="fg"><label class="fl">학번</label><input class="fi" id="ws-id2" type="text" placeholder="1112"></div>
+        </div>
+      </div>
+    </div>
+    <div class="team-div"><div class="team-div-line"></div><div class="team-div-label"><i class="ti ti-users" style="font-size:11px;vertical-align:-1px;margin-right:3px"></i>2인 공동 활동지</div><div class="team-div-line"></div></div>
+    <div id="ws-questions"></div>
+    <div class="team-div"><div class="team-div-line"></div><div class="team-div-label"><i class="ti ti-writing" style="font-size:11px;vertical-align:-1px;margin-right:3px"></i>개인 소감문 (각자 작성)</div><div class="team-div-line"></div></div>
+    <div class="mem-block"><div class="mem-hdr"><span class="mtag m1" id="ref-lbl-1">팀원 1 소감문</span></div><textarea class="fta" id="ws-ref1" placeholder="수업을 통해 느낀 점, 배운 점, 더 알고 싶은 점을 자유롭게 작성하세요..."></textarea></div>
+    <div class="mem-block"><div class="mem-hdr"><span class="mtag m2" id="ref-lbl-2">팀원 2 소감문</span></div><textarea class="fta" id="ws-ref2" placeholder="수업을 통해 느낀 점, 배운 점, 더 알고 싶은 점을 자유롭게 작성하세요..."></textarea></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:8px">
+      <button class="abtn p" onclick="saveWorksheet()" style="padding:9px 24px;font-size:13px">
+        <i class="ti ti-device-floppy"></i> 제출하기
+      </button>
+    </div>
+    <div id="ws-status" class="smsg"></div>
+  </div>
+
+  <!-- ② 조회 탭 -->
+  <div id="ws-panel-view" class="content" style="display:none;max-width:680px">
+    <div class="card" style="margin-bottom:14px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:7px">
+        <i class="ti ti-search" style="font-size:15px;color:var(--accent)"></i>활동지 검색
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px">팀원 1 또는 팀원 2의 이름/학번으로 검색하세요</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input class="fi" id="ws-search-name" type="text" placeholder="이름 (예: 홍길동)" style="flex:1">
+        <input class="fi" id="ws-search-id" type="text" placeholder="학번 (예: 1111)" style="flex:1" onkeydown="if(event.key==='Enter')wsSearch()">
+        <button class="abtn" onclick="wsSearch()" style="flex-shrink:0;border-color:var(--accent);color:var(--accent);font-weight:600">
+          <i class="ti ti-search"></i> 검색
+        </button>
+      </div>
+    </div>
+    <div id="ws-search-result"></div>
+  </div>
+
+  <!-- ③ 수정 패널 -->
+  <div id="ws-panel-edit" class="content" style="display:none">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <button class="abtn" onclick="wsBackToView()" style="font-size:11px">
+        <i class="ti ti-arrow-left"></i> 조회로 돌아가기
+      </button>
+      <span style="font-size:13px;font-weight:700;color:var(--text)">활동지 수정</span>
+    </div>
+    <div class="smsg info" style="display:block;margin-bottom:12px">
+      <i class="ti ti-info-circle" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>
+      수정 후 아래 <strong>수정 저장</strong> 버튼을 눌러야 반영됩니다.
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px">
+        <i class="ti ti-users" style="font-size:15px;color:var(--primary)"></i>팀 정보
+      </div>
+      <div class="mem-block">
+        <div class="mem-hdr"><span class="mtag m1">팀원 1</span></div>
+        <div class="frow">
+          <div class="fg"><label class="fl">이름</label><input class="fi" id="ws-en1" type="text" oninput="updateEditLabels()"></div>
+          <div class="fg"><label class="fl">학번 (변경 불가)</label><input class="fi" id="ws-eid1" type="text" readonly style="background:var(--bg);color:var(--text3);cursor:not-allowed"></div>
+        </div>
+      </div>
+      <div class="mem-block">
+        <div class="mem-hdr"><span class="mtag m2">팀원 2</span></div>
+        <div class="frow">
+          <div class="fg"><label class="fl">이름</label><input class="fi" id="ws-en2" type="text" oninput="updateEditLabels()"></div>
+          <div class="fg"><label class="fl">학번</label><input class="fi" id="ws-eid2" type="text"></div>
+        </div>
+      </div>
+    </div>
+    <div class="team-div"><div class="team-div-line"></div><div class="team-div-label"><i class="ti ti-users" style="font-size:11px;vertical-align:-1px;margin-right:3px"></i>2인 공동 활동지</div><div class="team-div-line"></div></div>
+    <div id="ws-edit-questions"></div>
+    <div class="team-div"><div class="team-div-line"></div><div class="team-div-label"><i class="ti ti-writing" style="font-size:11px;vertical-align:-1px;margin-right:3px"></i>개인 소감문</div><div class="team-div-line"></div></div>
+    <div class="mem-block"><div class="mem-hdr"><span class="mtag m1" id="edit-lbl-1">팀원 1 소감문</span></div><textarea class="fta" id="ws-eref1" placeholder="소감문을 작성하세요..."></textarea></div>
+    <div class="mem-block"><div class="mem-hdr"><span class="mtag m2" id="edit-lbl-2">팀원 2 소감문</span></div><textarea class="fta" id="ws-eref2" placeholder="소감문을 작성하세요..."></textarea></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:8px">
+      <button class="abtn p" onclick="saveEditWorksheet()" style="padding:9px 24px;font-size:13px">
+        <i class="ti ti-device-floppy"></i> 수정 저장
+      </button>
+    </div>
+    <div id="ws-edit-status" class="smsg"></div>
+  </div>
+</div>
+
+<div id="viewer" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="stopViewer();go('home')"><i class="ti ti-arrow-left"></i> 홈</button>
+    <div><div class="tb-title">교사 화면 보기</div><div class="tb-sub" id="viewer-sub">연결 대기 중...</div></div>
+    <div class="tb-actions">
+      <button class="abtn" onclick="connectViewer()"><i class="ti ti-refresh"></i> 재연결</button>
+      <button class="abtn" onclick="toggleFullscreen('viewer-video')"><i class="ti ti-arrows-maximize"></i> 전체화면</button>
+      <button class="abtn" onclick="togglePiP()" id="pip-btn"><i class="ti ti-picture-in-picture"></i> PiP</button>
+    </div>
+  </div>
+  <div class="content" style="max-width:860px">
+    <div class="conn-status waiting" id="viewer-status">
+      <i class="ti ti-wifi-off" style="font-size:16px"></i>
+      <span id="viewer-status-text">교사가 방송을 시작하면 자동으로 연결됩니다</span>
+    </div>
+    <div class="cam-wrap">
+      <video id="viewer-video" autoplay playsinline style="width:100%;min-height:300px;background:#111"></video>
+      <div class="cam-badge off" id="viewer-badge"><i class="ti ti-wifi-off" style="font-size:11px"></i> 대기 중</div>
+    </div>
+    <div class="zoom-row">
+      <button class="zoom-btn" onclick="adjVZoom(-0.1)">−</button>
+      <span style="font-size:12px;color:var(--text2);min-width:36px;text-align:center" id="v-zoom-lbl">100%</span>
+      <button class="zoom-btn" onclick="adjVZoom(0.1)">+</button>
+      <button class="abtn" onclick="resetVZoom()" style="font-size:11px;padding:4px 10px">초기화</button>
+    </div>
+    <div style="background:var(--bg3);border-radius:var(--rad);padding:12px;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:500;margin-bottom:7px;display:flex;align-items:center;gap:6px">
+        <i class="ti ti-network" style="font-size:14px;color:var(--blue)"></i>
+        선생님 컴퓨터 IP 주소
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input class="fi" id="viewer-ip-input" type="text" placeholder="예: 192.168.1.5"
+          style="max-width:180px;font-size:13px;font-family:monospace" value="">
+        <span style="font-size:13px;color:var(--text2);font-family:monospace">:3000</span>
+        <button class="abtn p" style="font-size:12px" onclick="saveServerIPViewer()">
+          <i class="ti ti-check"></i> 저장 후 연결
+        </button>
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:6px">
+        선생님이 칠판에 적어준 주소에서 숫자 부분만 입력하세요
+      </div>
+    </div>
+    <div id="viewer-https-warning" style="display:none;background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--rad);padding:12px;margin-bottom:12px;font-size:12px;color:#92400E;line-height:1.7">
+      <strong>⚠️ 안내:</strong> 실물화상기는 <strong>http://선생님IP:3000</strong> 주소로 접속할 때만 작동해요.<br>
+      선생님이 칠판에 적어준 주소로 다시 접속해 주세요.
+    </div>
+    <div class="info-box">
+      <strong>사용 방법</strong><br>
+      위에 선생님 IP를 입력하고 저장하면 자동으로 연결됩니다.<br>
+      PiP 버튼으로 작은 창을 띄워 활동지 작성 중에도 화면을 볼 수 있습니다.
+    </div>
+  </div>
+</div>
+
+<!-- TEACHER LOGIN -->
+<div id="teacher-login" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('home')"><i class="ti ti-arrow-left"></i> 홈</button>
+    <div class="tb-title">교사용 접근</div>
+  </div>
+  <div class="lw">
+    <div class="lcard">
+      <div style="font-size:32px;margin-bottom:10px"><i class="ti ti-lock"></i></div>
+      <div style="font-size:17px;font-weight:700;margin-bottom:5px">교사 인증</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:20px">교사용 비밀번호를 입력하세요</div>
+      <input class="fi" id="teacher-pw" type="password" placeholder="비밀번호" style="text-align:center;letter-spacing:.12em;margin-bottom:10px" onkeydown="if(event.key==='Enter')teacherLogin()">
+      <button class="abtn p" style="width:100%;justify-content:center;padding:9px" onclick="teacherLogin()">입장하기</button>
+      <div style="font-size:11px;color:var(--red);margin-top:8px;display:none" id="login-err">비밀번호가 올바르지 않습니다</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:12px">비밀번호 힌트: 내선번호</div>
+    </div>
+  </div>
+</div>
+
+<!-- TEACHER DASHBOARD -->
+<div id="teacher" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="stopBroadcast();go('home')"><i class="ti ti-arrow-left"></i> 홈</button>
+    <div><div class="tb-title">교사용 관리</div></div>
+    <div class="tb-actions">
+      <button class="abtn" onclick="refreshTeacher()"><i class="ti ti-refresh"></i> 새로고침</button>
+      <button class="abtn p" onclick="saveTeacher()"><i class="ti ti-device-floppy"></i> 저장</button>
+    </div>
+  </div>
+  <div class="t-tabs">
+    <button class="t-tab active" onclick="switchTab(this,'tab-broadcast')"><i class="ti ti-video" style="font-size:13px;vertical-align:-2px"></i> 화면 방송</button>
+    <button class="t-tab" onclick="switchTab(this,'tab-overview')">제출 현황</button>
+    <button class="t-tab" onclick="switchTab(this,'tab-detail')">활동지 상세</button>
+    <button class="t-tab" onclick="switchTab(this,'tab-reflection')">소감문 현황</button>
+    <button class="t-tab" onclick="switchTab(this,'tab-seteuk')">세특 자동 완성</button>
+    <button class="t-tab" onclick="switchTab(this,'tab-qmgmt')">질문 관리</button>
+    <button class="t-tab" onclick="switchTab(this,'tab-install')"><i class="ti ti-download" style="font-size:13px;vertical-align:-2px"></i> 설치 안내</button>
+    <button class="t-tab" onclick="switchTab(this,'tab-materials-mgr')"><i class="ti ti-folder-up" style="font-size:13px;vertical-align:-2px"></i> 수업 자료 관리</button>
+    <button class="t-tab" onclick="switchTab(this,'tab-roster')"><i class="ti ti-users-group" style="font-size:13px;vertical-align:-2px"></i> 출석부·팀 구성</button>
+  </div>
+
+  <!-- 자료 관리 탭 -->
+  <div id="tab-materials-mgr" class="t-content hidden">
+    <div class="card" style="margin-bottom:14px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:7px">
+        <i class="ti ti-folder-up" style="font-size:15px;color:var(--primary)"></i>수업 자료 업로드
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px">업로드한 자료는 학생 수업 자료 다운로드 탭에 바로 표시됩니다.</div>
+      <div class="fg" style="margin-bottom:10px">
+        <label class="fl">자료 이름</label>
+        <input class="fi" id="mat-name-input" type="text" placeholder="예: 티처블머신 활용 가이드">
+      </div>
+      <div class="fg" style="margin-bottom:12px">
+        <label class="fl">파일 선택</label>
+        <input type="file" id="mat-file-input" style="padding:7px 0;font-size:13px;color:var(--text)">
+      </div>
+      <button class="abtn p" onclick="uploadMaterial()" style="width:100%;justify-content:center;padding:9px">
+        <i class="ti ti-upload"></i> 업로드
+      </button>
+      <div id="mat-upload-msg" class="smsg" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px">
+        <i class="ti ti-files" style="font-size:15px;color:var(--accent)"></i>업로드된 자료 목록
+        <button class="abtn" onclick="loadMaterialsMgr()" style="margin-left:auto;font-size:11px;padding:4px 10px">
+          <i class="ti ti-refresh"></i> 새로고침
+        </button>
+      </div>
+      <div id="mat-mgr-list">
+        <div class="empty-st" style="padding:24px"><div class="empty-icon">📂</div><p>업로드된 자료가 없습니다</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 출석부·팀 구성 탭 -->
+  <div id="tab-roster" class="t-content hidden">
+
+    <!-- 학생 명단 업로드 -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:7px">
+        <i class="ti ti-table-import" style="font-size:15px;color:var(--primary)"></i>학생 명단 업로드
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.7">
+        CSV 또는 엑셀 파일을 업로드하세요.<br>
+        첫 번째 열: <strong style="color:var(--text)">학번</strong> &nbsp;|&nbsp; 두 번째 열: <strong style="color:var(--text)">이름</strong> (첫 행은 헤더 또는 데이터)
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input type="file" id="roster-file" accept=".csv,.xlsx,.xls" style="display:none" onchange="parseRosterFile(this)">
+        <label for="roster-file" class="abtn p" style="cursor:pointer;font-size:12px">
+          <i class="ti ti-upload"></i> 파일 선택 (CSV / 엑셀)
+        </label>
+        <button class="abtn" onclick="clearRoster()" style="font-size:12px;color:var(--sport);border-color:var(--sport)">
+          <i class="ti ti-trash"></i> 초기화
+        </button>
+        <span id="roster-file-name" style="font-size:12px;color:var(--text3)">선택된 파일 없음</span>
+      </div>
+      <div id="roster-parse-msg" class="smsg" style="margin-top:8px"></div>
+    </div>
+
+    <!-- 학생 명단 미리보기 -->
+    <div id="roster-preview-card" class="card" style="margin-bottom:12px;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+        <div style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px">
+          <i class="ti ti-list" style="font-size:15px;color:var(--accent)"></i>
+          학생 명단 <span id="roster-count" style="font-size:12px;font-weight:400;color:var(--text3)"></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span id="roster-save-status" style="font-size:11px;display:none"></span>
+          <button class="abtn" onclick="saveRosterToDb()" style="font-size:12px;border-color:var(--accent);color:var(--accent)">
+            <i class="ti ti-device-floppy"></i> 다시 저장
+          </button>
+        </div>
+      </div>
+      <div id="roster-list" style="max-height:200px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px"></div>
+    </div>
+
+    <!-- 팀 생성 설정 -->
+    <div id="team-gen-card" class="card" style="margin-bottom:12px;display:none">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px">
+        <i class="ti ti-shuffle" style="font-size:15px;color:var(--data)"></i>랜덤 팀 생성
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+        <div class="fg" style="flex-shrink:0">
+          <label class="fl">팀 구성 방식</label>
+          <select id="team-mode" class="fi" style="font-size:12px;max-width:150px" onchange="updateTeamPreview()">
+            <option value="size">팀당 인원 수</option>
+            <option value="count">총 팀 수</option>
+          </select>
+        </div>
+        <div class="fg" style="flex-shrink:0">
+          <label class="fl" id="team-num-label">팀당 인원 수</label>
+          <input class="fi" id="team-num" type="number" value="2" min="1" max="10" style="width:80px;font-size:13px" oninput="updateTeamPreview()">
+        </div>
+        <div style="font-size:12px;color:var(--text3)" id="team-preview-info"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="abtn p" onclick="generateTeams()" style="font-size:12px">
+          <i class="ti ti-shuffle"></i> 랜덤 팀 생성
+        </button>
+        <button class="abtn" onclick="saveTeamToDb()" style="font-size:12px;border-color:var(--accent);color:var(--accent)">
+          <i class="ti ti-device-floppy"></i> 팀 저장
+        </button>
+        <button class="excel-btn" onclick="dlTeamExcel()" style="font-size:12px">
+          <i class="ti ti-file-spreadsheet"></i> 팀 엑셀 다운로드
+        </button>
+      </div>
+    </div>
+
+    <!-- 팀 결과 -->
+    <div id="team-result-card" class="card" style="display:none">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px">
+        <i class="ti ti-users" style="font-size:15px;color:var(--primary)"></i>팀 구성 결과
+        <span style="font-size:11px;color:var(--text3);font-weight:400">팀원을 드래그해서 다른 팀으로 이동하세요</span>
+      </div>
+      <div id="team-result-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px"></div>
+    </div>
+
+  </div>
+
+
+  <!-- 화면 방송 -->
+  <div id="tab-broadcast" class="t-content">
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px"><i class="ti ti-video" style="color:var(--red);font-size:15px;vertical-align:-2px;margin-right:6px"></i>실물화상기 (WebRTC 실시간 방송)</div>
+      <div id="https-warning" style="display:none;background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--rad);padding:13px;margin-bottom:12px;font-size:12px;color:#92400E;line-height:1.7">
+        <strong>⚠️ 실물화상기 사용 안내</strong><br>
+        현재 <strong>https://</strong> 주소로 접속 중입니다. 실물화상기는 보안 정책상 HTTPS에서 작동하지 않아요.<br><br>
+        <strong>해결 방법:</strong> 수업 시간에 학생/교사 모두 아래 주소로 접속하세요.<br>
+        <code style="background:#FEF3C7;padding:2px 6px;border-radius:4px">http://선생님IP:3000</code>
+        (시작.bat 실행 후 검은 창에 표시되는 주소)
+      </div>
+      <div class="info-box">
+        <strong>사용 방법</strong><br>
+        1. 아래에 선생님 컴퓨터 IP를 입력하고 저장하세요 (시작.bat 실행 시 검은 창에 표시).<br>
+        2. '방송 시작'을 눌러 카메라 또는 화면 공유를 선택하세요.<br>
+        3. 학생들이 '교사 화면 보기'에 접속하면 자동으로 연결됩니다.
+      </div>
+      <div style="background:var(--bg3);border-radius:var(--rad);padding:14px;margin-bottom:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+          <i class="ti ti-network" style="font-size:14px;color:var(--blue)"></i>
+          선생님 컴퓨터 IP 주소 설정
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input class="fi" id="server-ip-input" type="text" placeholder="예: 192.168.1.5"
+            style="max-width:180px;font-size:13px;font-family:monospace"
+            value="">
+          <span style="font-size:13px;color:var(--text2);font-family:monospace">:3000</span>
+          <button class="abtn p" style="font-size:12px" onclick="saveServerIP()">
+            <i class="ti ti-check"></i> 저장
+          </button>
+          <span id="ip-saved-msg" style="font-size:12px;color:var(--green);display:none">
+            <i class="ti ti-circle-check" style="font-size:13px;vertical-align:-2px"></i> 저장됨
+          </span>
+        </div>
+        <div style="font-size:11px;color:var(--text2);margin-top:7px;line-height:1.6">
+          시작.bat 실행 후 검은 창에 표시되는 <code style="background:var(--bg2);padding:1px 5px;border-radius:3px">학생 주소 → http://192.168.X.X:3000</code> 에서 숫자 부분만 입력
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <button class="abtn green" id="bc-start" onclick="startBroadcast()"><i class="ti ti-video"></i> 방송 시작</button>
+        <button class="abtn red" id="bc-stop" onclick="stopBroadcast()" style="display:none"><i class="ti ti-video-off"></i> 방송 종료</button>
+        <select class="fi" id="cam-src" style="max-width:180px;font-size:12px">
+          <option value="camera">웹캠 (카메라)</option>
+          <option value="screen">화면 공유 (스크린)</option>
+        </select>
+        <button class="abtn" onclick="toggleMirror()" style="font-size:11px"><i class="ti ti-flip-horizontal"></i> 반전</button>
+        <span id="viewer-count-badge" style="font-size:12px;color:var(--text2)"><i class="ti ti-users" style="font-size:13px;vertical-align:-2px"></i> 시청자 <strong id="viewer-count">0</strong>명</span>
+      </div>
+      <div id="bc-status" class="smsg"></div>
+    </div>
+    <div class="cam-wrap">
+      <video id="teacher-video" autoplay playsinline muted style="width:100%;min-height:320px;background:#111"></video>
+      <div class="cam-badge off" id="teacher-badge"><i class="ti ti-video-off" style="font-size:11px"></i> 대기 중</div>
+    </div>
+    <div class="zoom-row">
+      <button class="zoom-btn" onclick="adjZoom(-0.1)">−</button>
+      <span style="font-size:12px;color:var(--text2);min-width:36px;text-align:center" id="zoom-lbl">100%</span>
+      <button class="zoom-btn" onclick="adjZoom(0.1)">+</button>
+      <button class="abtn" onclick="resetZoom()" style="font-size:11px;padding:4px 10px">초기화</button>
+      <button class="abtn" onclick="toggleFullscreen('teacher-video')" style="font-size:11px"><i class="ti ti-arrows-maximize"></i> 전체화면</button>
+      <button class="abtn" onclick="takeSnapshot()" style="font-size:11px"><i class="ti ti-camera"></i> 스냅샷</button>
+    </div>
+    <canvas id="snap-canvas" style="display:none"></canvas>
+    <div id="snap-area"></div>
+  </div>
+
+  <!-- 제출 현황 -->
+  <div id="tab-overview" class="t-content hidden">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">제출 팀 수</div><div class="stat-val ok" id="st-teams">0</div></div>
+      <div class="stat-card"><div class="stat-label">활동지 제출 인원</div><div class="stat-val ok" id="st-act">0</div></div>
+      <div class="stat-card"><div class="stat-label">소감문 (팀원1)</div><div class="stat-val ok" id="st-r1">0</div></div>
+      <div class="stat-card"><div class="stat-label">소감문 (팀원2)</div><div class="stat-val ok" id="st-r2">0</div></div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="stbl">
+        <colgroup><col width="5%"><col width="13%"><col width="13%"><col width="12%"><col width="12%"><col width="9%"><col width="12%"><col width="24%"></colgroup>
+        <thead><tr><th>번호</th><th>팀원1</th><th>팀원2</th><th>학번1</th><th>학번2</th><th>반</th><th>활동지</th><th>소감문</th></tr></thead>
+        <tbody id="overview-body"></tbody>
+      </table>
+    </div>
+    <div class="empty-st" id="overview-empty" style="display:none"><div class="empty-icon">📋</div><p>아직 제출된 활동지가 없습니다</p></div>
+  </div>
+
+  <!-- 활동지 상세 -->
+  <div id="tab-detail" class="t-content hidden">
+    <div style="margin-bottom:14px"><label class="fl" style="margin-bottom:5px;display:block">팀 선택</label><select id="team-sel" class="fi" style="max-width:260px" onchange="showTeamDetail()"><option value="">-- 팀을 선택하세요 --</option></select></div>
+    <div id="team-detail"><div class="empty-st">팀을 선택하면 활동지 내용이 표시됩니다</div></div>
+  </div>
+
+  <!-- 소감문 현황 -->
+  <div id="tab-reflection" class="t-content hidden">
+    <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="abtn p" id="rf-all" onclick="filterRf('all',this)" style="font-size:11px">전체</button>
+      <button class="abtn" id="rf-m1" onclick="filterRf('m1',this)" style="font-size:11px">팀원1만</button>
+      <button class="abtn" id="rf-m2" onclick="filterRf('m2',this)" style="font-size:11px">팀원2만</button>
+      <button class="abtn" id="rf-none" onclick="filterRf('none',this)" style="font-size:11px">미제출 포함</button>
+    </div>
+    <div id="rf-list"></div>
+    <div class="empty-st" id="rf-empty" style="display:none"><div class="empty-icon">✍️</div><p>제출된 소감문이 없습니다</p></div>
+  </div>
+
+  <!-- 세특 -->
+  <div id="tab-seteuk" class="t-content hidden">
+    <!-- 프롬프트 설정 카드 -->
+    <div class="card" style="margin-bottom:14px;border-left:3px solid var(--primary)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px">
+        <div style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px">
+          <i class="ti ti-settings" style="font-size:14px;color:var(--primary)"></i>세특 생성 프롬프트 설정
+        </div>
+        <button class="abtn p" onclick="savePrompt()" style="font-size:11px;padding:5px 12px">
+          <i class="ti ti-device-floppy"></i> 저장
+        </button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:7px">저장된 프롬프트는 세특 생성 시 자동으로 사용됩니다. 비워두면 기본 프롬프트가 사용됩니다.</div>
+      <textarea class="fta" id="seteuk-prompt-input" style="min-height:80px;font-size:12px"
+        placeholder="예: 위 내용을 바탕으로 학교생활기록부 세부능력 및 특기사항을 500자 이내로 작성해 주세요..."></textarea>
+      <div id="prompt-save-msg" class="smsg" style="margin-top:6px"></div>
+    </div>
+    <!-- AI 선택 + 전체생성 + 엑셀 -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      <div class="ai-sel" style="margin-bottom:0">
+        <button class="ai-chip" id="ai-btn-gemini" onclick="selAI('gemini',this)">
+          <i class="ti ti-stars" style="font-size:12px;vertical-align:-1px;margin-right:3px"></i>Gemini
+        </button>
+        <button class="ai-chip sel" id="ai-btn-gpt" onclick="selAI('gpt',this)">
+          <i class="ti ti-message-circle" style="font-size:12px;vertical-align:-1px;margin-right:3px"></i>ChatGPT
+        </button>
+        <button class="ai-chip" id="ai-btn-claude" onclick="selAI('claude',this)">
+          <i class="ti ti-robot" style="font-size:12px;vertical-align:-1px;margin-right:3px"></i>Claude
+        </button>
+        <button class="abtn" onclick="openApiKeyModal()" style="font-size:11px;padding:5px 11px;border-style:dashed">
+          <i class="ti ti-key"></i> API 키 설정
+        </button>
+      </div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+        <button class="abtn green" id="gen-all-btn" onclick="genAllSeteuk()" style="font-size:12px;padding:7px 16px">
+          <i class="ti ti-sparkles"></i> 모두 세특 완성
+        </button>
+        <button class="excel-btn" onclick="dlExcel()">
+          <i class="ti ti-file-spreadsheet" style="font-size:14px"></i> 활동지 엑셀
+        </button>
+        <button class="excel-btn" onclick="dlSeteukExcel()" style="border-color:var(--primary);color:var(--primary)">
+          <i class="ti ti-file-spreadsheet" style="font-size:14px"></i> 세특 엑셀
+        </button>
+      </div>
+    </div>
+    <div id="gen-all-status" class="smsg" style="margin-bottom:10px"></div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:8px" id="ai-note"></div>
+    <div id="sk-list"></div>
+    <div class="empty-st" id="sk-empty" style="display:none"><div class="empty-icon">✨</div><p>제출된 활동지가 있어야 세특을 생성할 수 있습니다</p></div>
+  </div>
+  <!-- 질문 관리 -->
+  <div id="tab-qmgmt" class="t-content hidden">
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px">공동 활동지 질문 편집</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:12px">저장하면 학생 활동지에 즉시 반영됩니다.</div>
+      <div id="q-ed-list"></div>
+      <button class="add-q" onclick="addQ()"><i class="ti ti-plus"></i> 질문 추가</button>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="abtn p" onclick="saveQs()"><i class="ti ti-device-floppy"></i> 저장</button>
+        <button class="abtn" onclick="resetQs()"><i class="ti ti-refresh"></i> 초기화</button>
+      </div>
+      <div id="q-save-st" class="smsg"></div>
+    </div>
+  </div>
+
+  <!-- 설치 안내 탭 -->
+  <div id="tab-install" class="t-content hidden">
+    <div class="card" style="margin-bottom:12px">
+      <!-- Supabase 설정 섹션 -->
+      <div style="font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+        <i class="ti ti-database" style="font-size:16px;color:#3ECF8E"></i>
+        Supabase 데이터베이스 연결
+        <span id="sb-status-badge" style="font-size:11px;font-weight:500;padding:2px 9px;border-radius:999px;background:var(--bg3);color:var(--text2)">미연결</span>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.7">
+        학생 활동지와 세특 데이터를 Supabase에 저장합니다. 아래 설정을 한 번만 입력하면 이후 자동 연결됩니다.
+      </div>
+      <div style="display:grid;gap:10px;margin-bottom:12px">
+        <div class="fg">
+          <label class="fl">Supabase Project URL</label>
+          <input class="fi" id="sb-url-input" type="text" placeholder="https://xxxxxxxxxxx.supabase.co" style="font-family:monospace;font-size:12px">
+        </div>
+        <div class="fg">
+          <label class="fl">Supabase Anon Key (공개키)</label>
+          <input class="fi" id="sb-anon-input" type="text" placeholder="eyJhbGciOiJIUzI1NiIs..." style="font-family:monospace;font-size:12px">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <button class="abtn green" onclick="saveSbConfig()"><i class="ti ti-plug"></i> 연결하기</button>
+        <button class="abtn" onclick="testSbConnection()"><i class="ti ti-wifi"></i> 연결 테스트</button>
+      </div>
+      <div id="sb-config-msg" class="smsg" style="margin-bottom:12px"></div>
+
+      <div style="background:var(--bg3);border-radius:var(--rad);padding:14px;margin-bottom:20px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <i class="ti ti-list-numbers" style="font-size:14px;color:var(--blue)"></i>
+          Supabase 설정 방법 (최초 1회)
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--text2);line-height:1.7">
+          <div><strong style="color:var(--text)">1.</strong> <a href="https://supabase.com" target="_blank" style="color:var(--blue)">supabase.com</a> → 무료 계정 가입 → New Project 생성</div>
+          <div><strong style="color:var(--text)">2.</strong> 좌측 메뉴 <strong style="color:var(--text)">SQL Editor</strong> → 아래 SQL 붙여넣고 실행</div>
+          <pre style="background:var(--bg2);border-radius:var(--rad);padding:12px;font-size:11px;overflow-x:auto;color:var(--text);line-height:1.6;margin:4px 0">-- 제출 데이터 테이블
+create table submissions (
+  id uuid primary key default gen_random_uuid(),
+  name1 text, student_id1 text unique,
+  class1 text, name2 text, student_id2 text,
+  answers jsonb default '{}',
+  reflection1 text, reflection2 text,
+  seteuk1 text, seteuk2 text,
+  submitted_at timestamptz default now()
+);
+-- 설정 테이블 (질문 저장용)
+create table settings (
+  key text primary key,
+  value text
+);
+-- 익명 접근 허용
+alter table submissions enable row level security;
+alter table settings enable row level security;
+create policy "allow all" on submissions for all using (true) with check (true);
+create policy "allow all" on settings for all using (true) with check (true);</pre>
+          <div><strong style="color:var(--text)">3.</strong> 좌측 메뉴 <strong style="color:var(--text)">Project Settings → API</strong></div>
+          <div style="padding-left:14px">• <strong style="color:var(--text)">Project URL</strong> 복사 → 위 URL 칸에 붙여넣기</div>
+          <div style="padding-left:14px">• <strong style="color:var(--text)">anon public</strong> 키 복사 → 위 Key 칸에 붙여넣기</div>
+          <div><strong style="color:var(--text)">4.</strong> 위의 <strong style="color:var(--text)">"연결하기"</strong> 버튼 클릭 → 완료!</div>
+        </div>
+      </div>
+
+      <div style="font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+        <i class="ti ti-download" style="font-size:16px;color:var(--blue)"></i>
+        프로그램 설치 파일 다운로드
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.8">
+        아래 파일 3개를 모두 같은 폴더에 저장하세요.<br>
+        바탕화면에 <strong>수업프로그램</strong> 폴더를 만들고 그 안에 넣는 것을 권장합니다.
+      </div>
+      <div style="display:grid;gap:10px">
+        <div style="background:var(--bg3);border-radius:var(--rad);padding:14px;display:flex;align-items:center;gap:14px">
+          <div style="width:42px;height:42px;background:#FAEEDA;color:#854F0B;border-radius:var(--rad);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">
+            <i class="ti ti-terminal"></i>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700">시작.bat</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">더블클릭 한 번으로 서버 실행 — 핵심 파일</div>
+          </div>
+          <button class="abtn p" style="flex-shrink:0;font-size:12px" onclick="dlFile('시작.bat','QGVjaG8gb2ZmCmNoY3AgNjUwMDEgPiBudWwKdGl0bGUg7LK07JyhwrfsoJXrs7Qg7Jy17ZWpIOyImOyXhSDshJzrsoQKCjo6IOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAo6OiAg7J20IO2MjOydvOydtCDsnojripQg7Y+0642U66W8IOyekeyXhSDtj7TrjZTroZwg7ISk7KCVCjo6IOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgApjZCAvZCAiJX5kcDAiCgplY2hvLgplY2hvICDilIzilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilJAKZWNobyAg4pSCICAgICDssrTsnKHCt+ygleuztCDsnLXtlakg7IiY7JeFIO2UhOuhnOq3uOueqCAgICAgICAg4pSCCmVjaG8gIOKUlOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUmAplY2hvLgoKOjog4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACjo6ICAx64uo6rOEOiBOb2RlLmpzIOywvuq4sAo6OiAg7Jqw7ISg7Iic7JyEOiDtj6zthLDruJQobm9kZe2PtOuNlCkgPiDsi5zsiqTthZwg7ISk7LmYCjo6IOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgApzZXQgTk9ERV9FWEU9Cgo6OiDtj6zthLDruJQgTm9kZS5qcyDtmZXsnbggKOydtCDtj7TrjZQg7JWI7J2YIG5vZGUg7Y+0642UKQppZiBleGlzdCAiJX5kcDBub2RlXG5vZGUuZXhlIiAoCiAgICBzZXQgTk9ERV9FWEU9JX5kcDBub2RlXG5vZGUuZXhlCiAgICBzZXQgTlBNX0NNRD0lfmRwMG5vZGVcbnBtLmNtZAogICAgZWNobyAgW+2ZleyduF0g7Y+s7YSw67iUIE5vZGUuanMg7IKs7JqpCiAgICBnb3RvIDpDSEVDS19NT0RVTEVTCikKCjo6IOyLnOyKpO2FnOyXkCDshKTsuZjrkJwgTm9kZS5qcyDtmZXsnbgKd2hlcmUgbm9kZSA+bnVsIDI+JjEKaWYgJWVycm9ybGV2ZWwlIGVxdSAwICgKICAgIHNldCBOT0RFX0VYRT1ub2RlCiAgICBzZXQgTlBNX0NNRD1ucG0KICAgIGVjaG8gIFvtmZXsnbhdIOyLnOyKpO2FnCBOb2RlLmpzIOyCrOyaqQogICAgZ290byA6Q0hFQ0tfTU9EVUxFUwopCgo6OiDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKOjogIDLri6jqs4Q6IE5vZGUuanMg7Y+s7YSw67iUIOyekOuPmSDri6TsmrTroZzrk5wKOjog4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACmVjaG8gIE5vZGUuanPqsIAg7JeG7Iq164uI64ukLiDtj6zthLDruJQg67KE7KCE7J2EIOyekOuPmeycvOuhnCDrsJvqsqDsirXri4jri6QuCmVjaG8gICjsnbjthLDrhLcg7Jew6rKw7J20IO2VhOyalO2VqeuLiOuLpCAtIOy1nOy0iCAx7ZqM66eMKQplY2hvLgoKOjogUG93ZXJTaGVsbOuhnCDri6TsmrTroZzrk5wKc2V0IE5PREVfVVJMPWh0dHBzOi8vbm9kZWpzLm9yZy9kaXN0L3YyMC4xMS4xL25vZGUtdjIwLjExLjEtd2luLXg2NC56aXAKc2V0IFpJUF9GSUxFPSV+ZHAwbm9kZV9kb3dubG9hZC56aXAKc2V0IE5PREVfRElSPSV+ZHAwbm9kZV90ZW1wCgplY2hvICDri6TsmrTroZzrk5wg7KSRLi4uICjslb0gMzBNQiwg7J6g7IucIOq4sOuLpOugpOyjvOyEuOyalCkKCnBvd2Vyc2hlbGwgLU5vUHJvZmlsZSAtRXhlY3V0aW9uUG9saWN5IEJ5cGFzcyAtQ29tbWFuZCBeCiAgInRyeSB7IFtOZXQuU2VydmljZVBvaW50TWFuYWdlcl06OlNlY3VyaXR5UHJvdG9jb2wgPSAnVGxzMTInOyBJbnZva2UtV2ViUmVxdWVzdCAtVXJpICclTk9ERV9VUkwlJyAtT3V0RmlsZSAnJVpJUF9GSUxFJScgLVVzZUJhc2ljUGFyc2luZzsgV3JpdGUtSG9zdCAn64uk7Jq066Gc65OcIOyZhOujjCcgfSBjYXRjaCB7IFdyaXRlLUhvc3QgJ+yLpO2MqDonICRfLkV4Y2VwdGlvbi5NZXNzYWdlOyBleGl0IDEgfSIKCmlmICVlcnJvcmxldmVsJSBuZXEgMCAoCiAgICBlY2hvLgogICAgZWNobyAgW+yYpOulmF0g64uk7Jq066Gc65Oc7JeQIOyLpO2MqO2WiOyKteuLiOuLpC4KICAgIGVjaG8uCiAgICBlY2hvICDsiJjrj5kg7ISk7LmYIOuwqeuylToKICAgIGVjaG8gIDEuIOu4jOudvOyasOyggOyXkOyEnCBodHRwczovL25vZGVqcy5vcmcg7KCR7IaNCiAgICBlY2hvICAyLiBMVFMg67KE7KCEIOuLpOyatOuhnOuTnCDrsI8g7ISk7LmYCiAgICBlY2hvICAzLiDshKTsuZgg7ZuEIOydtCDtjIzsnbzsnYQg64uk7IucIOyLpO2WiQogICAgZWNoby4KICAgIHBhdXNlCiAgICBleGl0IC9iIDEKKQoKZWNobyAg7JWV7LaVIO2VtOygnCDspJEuLi4KcG93ZXJzaGVsbCAtTm9Qcm9maWxlIC1FeGVjdXRpb25Qb2xpY3kgQnlwYXNzIC1Db21tYW5kIF4KICAiRXhwYW5kLUFyY2hpdmUgLVBhdGggJyVaSVBfRklMRSUnIC1EZXN0aW5hdGlvblBhdGggJyVOT0RFX0RJUiUnIC1Gb3JjZSIKCjo6IOyVley2lSDtlbTsoJzrkJwg7Y+0642U66W8IG5vZGUg7Y+0642U66GcIOydtOuPmQpmb3IgL2QgJSVpIGluICgiJU5PREVfRElSJVxub2RlLXYqIikgZG8gKAogICAgbW92ZSAiJSVpIiAiJX5kcDBub2RlIiA+bnVsCikKcm1kaXIgL3MgL3EgIiVOT0RFX0RJUiUiIDI+bnVsCmRlbCAiJVpJUF9GSUxFJSIgMj5udWwKCmlmIGV4aXN0ICIlfmRwMG5vZGVcbm9kZS5leGUiICgKICAgIHNldCBOT0RFX0VYRT0lfmRwMG5vZGVcbm9kZS5leGUKICAgIHNldCBOUE1fQ01EPSV+ZHAwbm9kZVxucG0uY21kCiAgICBlY2hvICBOb2RlLmpzIOykgOu5hCDsmYTro4whCiAgICBlY2hvLgopIGVsc2UgKAogICAgZWNobyAgW+yYpOulmF0gTm9kZS5qcyDshKTsoJXsl5Ag7Iuk7Yyo7ZaI7Iq164uI64ukLiDsiJjrj5nsnLzroZwg7ISk7LmY7ZW07KO87IS47JqULgogICAgcGF1c2UKICAgIGV4aXQgL2IgMQopCgo6OiDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKOjogIDPri6jqs4Q6IO2MqO2CpOyngCDshKTsuZggKOy1nOy0iCAx7ZqMKQo6OiDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKOkNIRUNLX01PRFVMRVMKaWYgbm90IGV4aXN0ICIlfmRwMG5vZGVfbW9kdWxlcyIgKAogICAgZWNobyAg7ZWE7JqU7ZWcIO2MqO2CpOyngOulvCDshKTsuZjtlZjripQg7KSRLi4uCiAgICAiJU5QTV9DTUQlIiBpbnN0YWxsIC0tc2lsZW50IDI+bnVsIHx8ICIlTk9ERV9FWEUlIiAiJX5kcDBub2RlXG5vZGVfbW9kdWxlc1xucG1cYmluXG5wbS1jbGkuanMiIGluc3RhbGwgLS1zaWxlbnQKICAgIGVjaG8gIO2MqO2CpOyngCDshKTsuZgg7JmE66OMIQogICAgZWNoby4KKQoKOjog4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACjo6ICA064uo6rOEOiDshJzrsoQg7Iuk7ZaJCjo6IOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAplY2hvICDshJzrsoTrpbwg7Iuc7J6R7ZWp64uI64ukLi4uCmVjaG8gICjsnbQg7LC97J2EIOuLq+ycvOuptCDshJzrsoTqsIAg7KKF66OM65Cp64uI64ukKQplY2hvLgoiJU5PREVfRVhFJSIgIiV+ZHAwc2VydmVyLmpzIgoKZWNoby4KZWNobyAg7ISc67KE6rCAIOyiheujjOuQmOyXiOyKteuLiOuLpC4KcGF1c2UK')">
+            <i class="ti ti-download"></i> 다운로드
+          </button>
+        </div>
+        <div style="background:var(--bg3);border-radius:var(--rad);padding:14px;display:flex;align-items:center;gap:14px">
+          <div style="width:42px;height:42px;background:#E6F1FB;color:#185FA5;border-radius:var(--rad);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">
+            <i class="ti ti-server"></i>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700">server.js</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">WebRTC 시그널링 서버 — 학생 연결 담당</div>
+          </div>
+          <button class="abtn p" style="flex-shrink:0;font-size:12px" onclick="dlFile('server.js','Ly8g4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACi8vICDssrTsnKHCt+ygleuztCDsnLXtlakg7IiY7JeFIFdlYlJUQyDsi5zqt7jrhJDrp4Eg7ISc67KECi8vIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgApjb25zdCBodHRwID0gcmVxdWlyZSgnaHR0cCcpOwpjb25zdCBmcyAgID0gcmVxdWlyZSgnZnMnKTsKY29uc3QgcGF0aCA9IHJlcXVpcmUoJ3BhdGgnKTsKY29uc3Qgb3MgICA9IHJlcXVpcmUoJ29zJyk7CgpsZXQgV2ViU29ja2V0U2VydmVyOwp0cnkgewogIFdlYlNvY2tldFNlcnZlciA9IHJlcXVpcmUoJ3dzJykuV2ViU29ja2V0U2VydmVyOwp9IGNhdGNoKGUpIHsKICBjb25zb2xlLmVycm9yKCdcblvsmKTrpZhdIHdzIO2MqO2CpOyngOqwgCDsl4bsirXri4jri6QuIOyLnOyekS5iYXTsnYQg64uk7IucIOyLpO2Wie2VtOyjvOyEuOyalC5cbicpOwogIHByb2Nlc3MuZXhpdCgxKTsKfQoKY29uc3QgUE9SVCA9IDMwMDA7CgpmdW5jdGlvbiBnZXRMb2NhbElQKCkgewogIGNvbnN0IG5ldHMgPSBvcy5uZXR3b3JrSW50ZXJmYWNlcygpOwogIGZvciAoY29uc3QgbmFtZSBvZiBPYmplY3Qua2V5cyhuZXRzKSkgewogICAgZm9yIChjb25zdCBuZXQgb2YgbmV0c1tuYW1lXSkgewogICAgICBpZiAobmV0LmZhbWlseSA9PT0gJ0lQdjQnICYmICFuZXQuaW50ZXJuYWwpIHJldHVybiBuZXQuYWRkcmVzczsKICAgIH0KICB9CiAgcmV0dXJuICdsb2NhbGhvc3QnOwp9Cgpjb25zdCBNSU1FID0gewogICcuaHRtbCc6ICd0ZXh0L2h0bWw7IGNoYXJzZXQ9dXRmLTgnLAogICcuanMnOiAgICdhcHBsaWNhdGlvbi9qYXZhc2NyaXB0OyBjaGFyc2V0PXV0Zi04JywKICAnLmNzcyc6ICAndGV4dC9jc3M7IGNoYXJzZXQ9dXRmLTgnLAogICcuanNvbic6ICdhcHBsaWNhdGlvbi9qc29uJywKICAnLnBuZyc6ICAnaW1hZ2UvcG5nJywKICAnLmpwZyc6ICAnaW1hZ2UvanBlZycsCn07Cgpjb25zdCBzZXJ2ZXIgPSBodHRwLmNyZWF0ZVNlcnZlcigocmVxLCByZXMpID0+IHsKICByZXMuc2V0SGVhZGVyKCdBY2Nlc3MtQ29udHJvbC1BbGxvdy1PcmlnaW4nLCAnKicpOwogIHJlcy5zZXRIZWFkZXIoJ0FjY2Vzcy1Db250cm9sLUFsbG93LU1ldGhvZHMnLCAnR0VULCBQT1NULCBPUFRJT05TJyk7CiAgcmVzLnNldEhlYWRlcignQWNjZXNzLUNvbnRyb2wtQWxsb3ctSGVhZGVycycsICdDb250ZW50LVR5cGUsIEF1dGhvcml6YXRpb24nKTsKICBpZiAocmVxLm1ldGhvZCA9PT0gJ09QVElPTlMnKSB7IHJlcy53cml0ZUhlYWQoMjA0KTsgcmVzLmVuZCgpOyByZXR1cm47IH0KCiAgLy8gQ2xhdWRlIEFQSSDtlITroZ3si5wKICBpZiAocmVxLm1ldGhvZCA9PT0gJ1BPU1QnICYmIHJlcS51cmwgPT09ICcvYXBpL2NsYXVkZScpIHsKICAgIGxldCBib2R5ID0gJyc7CiAgICByZXEub24oJ2RhdGEnLCBkID0+IGJvZHkgKz0gZCk7CiAgICByZXEub24oJ2VuZCcsICgpID0+IHsKICAgICAgdHJ5IHsKICAgICAgICBjb25zdCB7IHByb21wdCB9ID0gSlNPTi5wYXJzZShib2R5KTsKICAgICAgICBjb25zdCBodHRwcyA9IHJlcXVpcmUoJ2h0dHBzJyk7CiAgICAgICAgY29uc3QgcGF5bG9hZCA9IEpTT04uc3RyaW5naWZ5KHsKICAgICAgICAgIG1vZGVsOiAnY2xhdWRlLXNvbm5ldC00LTIwMjUwNTE0JywKICAgICAgICAgIG1heF90b2tlbnM6IDEwMDAsCiAgICAgICAgICBtZXNzYWdlczogW3sgcm9sZTogJ3VzZXInLCBjb250ZW50OiBwcm9tcHQgfV0KICAgICAgICB9KTsKICAgICAgICBjb25zdCBhcGlLZXkgPSBwcm9jZXNzLmVudi5BTlRIUk9QSUNfQVBJX0tFWSB8fCAnWU9VUl9BUElfS0VZX0hFUkUnOwogICAgICAgIGNvbnN0IG9wdGlvbnMgPSB7CiAgICAgICAgICBob3N0bmFtZTogJ2FwaS5hbnRocm9waWMuY29tJywKICAgICAgICAgIHBhdGg6ICcvdjEvbWVzc2FnZXMnLAogICAgICAgICAgbWV0aG9kOiAnUE9TVCcsCiAgICAgICAgICBoZWFkZXJzOiB7CiAgICAgICAgICAgICdDb250ZW50LVR5cGUnOiAnYXBwbGljYXRpb24vanNvbicsCiAgICAgICAgICAgICd4LWFwaS1rZXknOiBhcGlLZXksCiAgICAgICAgICAgICdhbnRocm9waWMtdmVyc2lvbic6ICcyMDIzLTA2LTAxJywKICAgICAgICAgICAgJ0NvbnRlbnQtTGVuZ3RoJzogQnVmZmVyLmJ5dGVMZW5ndGgocGF5bG9hZCkKICAgICAgICAgIH0KICAgICAgICB9OwogICAgICAgIGNvbnN0IGFwaVJlcSA9IGh0dHBzLnJlcXVlc3Qob3B0aW9ucywgYXBpUmVzID0+IHsKICAgICAgICAgIGxldCBkYXRhID0gJyc7CiAgICAgICAgICBhcGlSZXMub24oJ2RhdGEnLCBkID0+IGRhdGEgKz0gZCk7CiAgICAgICAgICBhcGlSZXMub24oJ2VuZCcsICgpID0+IHsKICAgICAgICAgICAgdHJ5IHsKICAgICAgICAgICAgICBjb25zdCByZXN1bHQgPSBKU09OLnBhcnNlKGRhdGEpOwogICAgICAgICAgICAgIGNvbnN0IHRleHQgPSByZXN1bHQuY29udGVudD8uWzBdPy50ZXh0IHx8ICfsg53shLEg7Iuk7YyoJzsKICAgICAgICAgICAgICByZXMud3JpdGVIZWFkKDIwMCwgeyAnQ29udGVudC1UeXBlJzogJ2FwcGxpY2F0aW9uL2pzb24nIH0pOwogICAgICAgICAgICAgIHJlcy5lbmQoSlNPTi5zdHJpbmdpZnkoeyB0ZXh0IH0pKTsKICAgICAgICAgICAgfSBjYXRjaChlKSB7CiAgICAgICAgICAgICAgcmVzLndyaXRlSGVhZCg1MDApOyByZXMuZW5kKEpTT04uc3RyaW5naWZ5KHsgdGV4dDogJ0FQSSDsmKTrpZgnIH0pKTsKICAgICAgICAgICAgfQogICAgICAgICAgfSk7CiAgICAgICAgfSk7CiAgICAgICAgYXBpUmVxLm9uKCdlcnJvcicsICgpID0+IHsgcmVzLndyaXRlSGVhZCg1MDApOyByZXMuZW5kKEpTT04uc3RyaW5naWZ5KHsgdGV4dDogJ0FQSSDsl7DqsrAg7Iuk7YyoJyB9KSk7IH0pOwogICAgICAgIGFwaVJlcS53cml0ZShwYXlsb2FkKTsKICAgICAgICBhcGlSZXEuZW5kKCk7CiAgICAgIH0gY2F0Y2goZSkgewogICAgICAgIHJlcy53cml0ZUhlYWQoNDAwKTsgcmVzLmVuZChKU09OLnN0cmluZ2lmeSh7IHRleHQ6ICfsmpTssq0g7Jik66WYJyB9KSk7CiAgICAgIH0KICAgIH0pOwogICAgcmV0dXJuOwogIH0KCiAgY29uc3QgdXJsUGF0aCA9IHJlcS51cmwgPT09ICcvJyA/ICcvaW5kZXguaHRtbCcgOiByZXEudXJsLnNwbGl0KCc/JylbMF07CiAgY29uc3QgZmlsZVBhdGggPSBwYXRoLmpvaW4oX19kaXJuYW1lLCB1cmxQYXRoKTsKICBpZiAoIWZpbGVQYXRoLnN0YXJ0c1dpdGgoX19kaXJuYW1lKSkgeyByZXMud3JpdGVIZWFkKDQwMyk7IHJlcy5lbmQoJ0ZvcmJpZGRlbicpOyByZXR1cm47IH0KCiAgZnMucmVhZEZpbGUoZmlsZVBhdGgsIChlcnIsIGRhdGEpID0+IHsKICAgIGlmIChlcnIpIHsgcmVzLndyaXRlSGVhZCg0MDQpOyByZXMuZW5kKCdOb3QgZm91bmQnKTsgcmV0dXJuOyB9CiAgICBjb25zdCBleHQgPSBwYXRoLmV4dG5hbWUoZmlsZVBhdGgpOwogICAgcmVzLndyaXRlSGVhZCgyMDAsIHsgJ0NvbnRlbnQtVHlwZSc6IE1JTUVbZXh0XSB8fCAndGV4dC9wbGFpbjsgY2hhcnNldD11dGYtOCcgfSk7CiAgICByZXMuZW5kKGRhdGEpOwogIH0pOwp9KTsKCi8vIFdlYlNvY2tldCDsi5zqt7jrhJDrp4EKY29uc3Qgd3NzID0gbmV3IFdlYlNvY2tldFNlcnZlcih7IHNlcnZlciB9KTsKbGV0IGJyb2FkY2FzdGVyID0gbnVsbDsKY29uc3Qgdmlld2VycyA9IG5ldyBNYXAoKTsKCmZ1bmN0aW9uIHNlbmRWaWV3ZXJDb3VudCgpIHsKICBpZiAoYnJvYWRjYXN0ZXI/LnJlYWR5U3RhdGUgPT09IDEpCiAgICBicm9hZGNhc3Rlci5zZW5kKEpTT04uc3RyaW5naWZ5KHsgdHlwZTogJ3ZpZXdlci1jb3VudCcsIGNvdW50OiB2aWV3ZXJzLnNpemUgfSkpOwp9Cgp3c3Mub24oJ2Nvbm5lY3Rpb24nLCB3cyA9PiB7CiAgd3Mub24oJ21lc3NhZ2UnLCByYXcgPT4gewogICAgbGV0IG1zZzsgdHJ5IHsgbXNnID0gSlNPTi5wYXJzZShyYXcpOyB9IGNhdGNoIHsgcmV0dXJuOyB9CiAgICBzd2l0Y2ggKG1zZy50eXBlKSB7CiAgICAgIGNhc2UgJ3JlZ2lzdGVyLWJyb2FkY2FzdGVyJzoKICAgICAgICBicm9hZGNhc3RlciA9IHdzOyB3cy5yb2xlID0gJ2Jyb2FkY2FzdGVyJzsKICAgICAgICB3cy5zZW5kKEpTT04uc3RyaW5naWZ5KHsgdHlwZTogJ2Jyb2FkY2FzdGVyLXJlYWR5JyB9KSk7CiAgICAgICAgdmlld2Vycy5mb3JFYWNoKHYgPT4geyBpZiAodi5yZWFkeVN0YXRlPT09MSkgdi5zZW5kKEpTT04uc3RyaW5naWZ5KHsgdHlwZTonYnJvYWRjYXN0ZXItam9pbmVkJyB9KSk7IH0pOwogICAgICAgIGNvbnNvbGUubG9nKGAgIFvrsKnshqEg7Iuc7J6RXSDrjIDquLAg7Iuc7LKt7J6QICR7dmlld2Vycy5zaXplfeuqhSDslYzrprxgKTsKICAgICAgICBicmVhazsKICAgICAgY2FzZSAncmVnaXN0ZXItdmlld2VyJzoKICAgICAgICB3cy5yb2xlPSd2aWV3ZXInOyB3cy52aWV3ZXJJZD1tc2cudmlld2VySWQ7CiAgICAgICAgaWYgKG1zZy52aWV3ZXJJZCkgdmlld2Vycy5zZXQobXNnLnZpZXdlcklkLCB3cyk7CiAgICAgICAgd3Muc2VuZChKU09OLnN0cmluZ2lmeShicm9hZGNhc3Rlcj8ucmVhZHlTdGF0ZT09PTEgPyB7IHR5cGU6J2Jyb2FkY2FzdGVyLWpvaW5lZCcgfSA6IHsgdHlwZTonbm8tYnJvYWRjYXN0ZXInIH0pKTsKICAgICAgICBzZW5kVmlld2VyQ291bnQoKTsKICAgICAgICBjb25zb2xlLmxvZyhgICBb7KCR7IaNXSDsi5zssq3snpAgJHt2aWV3ZXJzLnNpemV966qFYCk7CiAgICAgICAgYnJlYWs7CiAgICAgIGNhc2UgJ3JlcXVlc3Qtb2ZmZXInOgogICAgICAgIGlmIChicm9hZGNhc3Rlcj8ucmVhZHlTdGF0ZT09PTEpIGJyb2FkY2FzdGVyLnNlbmQoSlNPTi5zdHJpbmdpZnkoeyB0eXBlOiduZXctdmlld2VyJywgdmlld2VySWQ6d3Mudmlld2VySWQgfSkpOwogICAgICAgIGJyZWFrOwogICAgICBjYXNlICdvZmZlcic6CiAgICAgICAgaWYgKG1zZy52aWV3ZXJJZCkgeyBjb25zdCB2PXZpZXdlcnMuZ2V0KG1zZy52aWV3ZXJJZCk7IGlmKHY/LnJlYWR5U3RhdGU9PT0xKSB2LnNlbmQoSlNPTi5zdHJpbmdpZnkobXNnKSk7IH0KICAgICAgICBicmVhazsKICAgICAgY2FzZSAnYW5zd2VyJzoKICAgICAgICBpZiAoYnJvYWRjYXN0ZXI/LnJlYWR5U3RhdGU9PT0xKSBicm9hZGNhc3Rlci5zZW5kKEpTT04uc3RyaW5naWZ5KHsgLi4ubXNnLCB2aWV3ZXJJZDp3cy52aWV3ZXJJZCB9KSk7CiAgICAgICAgYnJlYWs7CiAgICAgIGNhc2UgJ2ljZS1jYW5kaWRhdGUnOgogICAgICAgIGlmICh3cy5yb2xlPT09J2Jyb2FkY2FzdGVyJykgewogICAgICAgICAgY29uc3Qgdj12aWV3ZXJzLmdldChtc2cudmlld2VySWQpOyBpZih2Py5yZWFkeVN0YXRlPT09MSkgdi5zZW5kKEpTT04uc3RyaW5naWZ5KG1zZykpOwogICAgICAgIH0gZWxzZSB7CiAgICAgICAgICBpZiAoYnJvYWRjYXN0ZXI/LnJlYWR5U3RhdGU9PT0xKSBicm9hZGNhc3Rlci5zZW5kKEpTT04uc3RyaW5naWZ5KHsgLi4ubXNnLCB2aWV3ZXJJZDp3cy52aWV3ZXJJZCB9KSk7CiAgICAgICAgfQogICAgICAgIGJyZWFrOwogICAgfQogIH0pOwogIHdzLm9uKCdjbG9zZScsICgpID0+IHsKICAgIGlmICh3cy5yb2xlPT09J2Jyb2FkY2FzdGVyJykgewogICAgICBicm9hZGNhc3Rlcj1udWxsOyBjb25zb2xlLmxvZygnICBb67Cp7IahIOyiheujjF0nKTsKICAgICAgdmlld2Vycy5mb3JFYWNoKHYgPT4geyBpZih2LnJlYWR5U3RhdGU9PT0xKSB2LnNlbmQoSlNPTi5zdHJpbmdpZnkoeyB0eXBlOidicm9hZGNhc3Rlci1sZWZ0JyB9KSk7IH0pOwogICAgfSBlbHNlIGlmICh3cy52aWV3ZXJJZCkgewogICAgICB2aWV3ZXJzLmRlbGV0ZSh3cy52aWV3ZXJJZCk7IHNlbmRWaWV3ZXJDb3VudCgpOwogICAgICBjb25zb2xlLmxvZyhgICBb7Ye07J6lXSDrgqjsnYAg7Iuc7LKt7J6QICR7dmlld2Vycy5zaXplfeuqhWApOwogICAgfQogIH0pOwogIHdzLm9uKCdlcnJvcicsICgpPT57fSk7Cn0pOwoKc2VydmVyLmxpc3RlbihQT1JULCAnMC4wLjAuMCcsICgpID0+IHsKICBjb25zdCBpcCA9IGdldExvY2FsSVAoKTsKICBjb25zb2xlLmxvZygnJyk7CiAgY29uc29sZS5sb2coJyAg4pSM4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSQJyk7CiAgY29uc29sZS5sb2coJyAg4pSCICAgICAg7LK07JyhwrfsoJXrs7Qg7Jy17ZWpIOyImOyXhSDshJzrsoQg7Iuk7ZaJIOykkSAg4pyTICAgIOKUgicpOwogIGNvbnNvbGUubG9nKCcgIOKUnOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUpCcpOwogIGNvbnNvbGUubG9nKGAgIOKUgiAg6rWQ7IKsIOyjvOyGjCAg4oaSICBodHRwOi8vbG9jYWxob3N0OiR7UE9SVH0gICAgICAgICDilIJgKTsKICBjb25zb2xlLmxvZygnICDilJzilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilKQnKTsKICBjb25zb2xlLmxvZyhgICDilIIgIO2VmeyDnSDso7zshowgIOKGkiAgaHR0cDovLyR7aXB9OiR7UE9SVH0gICAgICAg4pSCYCk7CiAgY29uc29sZS5sb2coJyAg4pSCICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg4pSCJyk7CiAgY29uc29sZS5sb2coJyAg4pSCICDimIUg7JyEIO2VmeyDnSDso7zshozrpbwg7Lmg7YyQ7JeQIOyggeyWtOyjvOyEuOyalCDimIUgICAgIOKUgicpOwogIGNvbnNvbGUubG9nKCcgIOKUnOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUpCcpOwogIGNvbnNvbGUubG9nKCcgIOKUgiAg7KKF66OMOiDsnbQg7LC97JeQ7IScIEN0cmwrQyAgICAgICAgICAgICAgICAgICAgIOKUgicpOwogIGNvbnNvbGUubG9nKCcgIOKUlOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUmCcpOwogIGNvbnNvbGUubG9nKCcnKTsKICB0cnkgeyByZXF1aXJlKCdjaGlsZF9wcm9jZXNzJykuZXhlYyhgc3RhcnQgaHR0cDovL2xvY2FsaG9zdDoke1BPUlR9YCk7IH0gY2F0Y2goZSkge30KfSk7Cg==')">
+            <i class="ti ti-download"></i> 다운로드
+          </button>
+        </div>
+        <div style="background:var(--bg3);border-radius:var(--rad);padding:14px;display:flex;align-items:center;gap:14px">
+          <div style="width:42px;height:42px;background:#EAF3DE;color:#3B6D11;border-radius:var(--rad);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">
+            <i class="ti ti-file-text"></i>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700">package.json</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">패키지 설정 파일 — 자동 설치에 필요</div>
+          </div>
+          <button class="abtn p" style="flex-shrink:0;font-size:12px" onclick="dlFile('package.json','ewogICJuYW1lIjogInBlLWluZm8tY2xhc3Mtc2VydmVyIiwKICAidmVyc2lvbiI6ICIxLjAuMCIsCiAgImRlc2NyaXB0aW9uIjogIuyytOycocK37KCV67O0IOycte2VqSDsiJjsl4UgV2ViUlRDIOyEnOuyhCIsCiAgIm1haW4iOiAic2VydmVyLmpzIiwKICAic2NyaXB0cyI6IHsKICAgICJzdGFydCI6ICJub2RlIHNlcnZlci5qcyIKICB9LAogICJkZXBlbmRlbmNpZXMiOiB7CiAgICAid3MiOiAiXjguMTYuMCIKICB9Cn0K')">
+            <i class="ti ti-download"></i> 다운로드
+          </button>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <button class="abtn green" style="width:100%;justify-content:center;padding:10px;font-size:13px" onclick="dlAll()">
+          <i class="ti ti-package"></i> 3개 파일 한번에 다운로드
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px">
+        <i class="ti ti-list-numbers" style="font-size:16px;color:var(--green)"></i>
+        실행 방법 (단계별 안내)
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:0">
+
+        <div style="display:flex;gap:14px;padding-bottom:18px;position:relative">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--text);color:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">1</div>
+            <div style="width:2px;flex:1;background:var(--border);margin-top:6px"></div>
+          </div>
+          <div style="padding-top:4px;flex:1">
+            <div style="font-size:13px;font-weight:700;margin-bottom:6px">위 파일 3개를 같은 폴더에 저장</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.7">
+              바탕화면에 <code style="background:var(--bg3);padding:1px 6px;border-radius:4px;font-size:11px">수업프로그램</code> 폴더 만들고 세 파일을 그 안에 넣어두세요.
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:14px;padding-bottom:18px;position:relative">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--text);color:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">2</div>
+            <div style="width:2px;flex:1;background:var(--border);margin-top:6px"></div>
+          </div>
+          <div style="padding-top:4px;flex:1">
+            <div style="font-size:13px;font-weight:700;margin-bottom:6px"><code style="background:var(--bg3);padding:1px 6px;border-radius:4px;font-size:12px">시작.bat</code> 더블클릭</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.7">
+              처음 실행 시 Node.js 포터블 버전을 자동으로 다운로드합니다 (약 30MB, 인터넷 필요).<br>
+              두 번째부터는 인터넷 없이 바로 실행됩니다.
+            </div>
+            <div style="margin-top:8px;background:var(--bg3);border-radius:var(--rad);padding:10px;font-size:11px;color:var(--text2)">
+              💡 Windows 보안 경고가 뜨면 <strong style="color:var(--text)">"추가 정보" → "실행"</strong> 클릭<br>
+              💡 방화벽 창이 뜨면 <strong style="color:var(--text)">"허용"</strong> 클릭
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:14px;padding-bottom:18px;position:relative">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--text);color:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">3</div>
+            <div style="width:2px;flex:1;background:var(--border);margin-top:6px"></div>
+          </div>
+          <div style="padding-top:4px;flex:1">
+            <div style="font-size:13px;font-weight:700;margin-bottom:6px">검은 창에서 학생 주소 확인</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.7">
+              서버가 켜지면 아래처럼 주소가 표시됩니다.
+            </div>
+            <div style="margin-top:8px;background:#111;border-radius:var(--rad);padding:12px;font-family:monospace;font-size:12px;color:#aaffaa;line-height:1.8">
+              교사 주소 → http://localhost:3000<br>
+              <span style="color:#ffff88">학생 주소 → http://192.168.1.5:3000</span><br>
+              <span style="color:#aaaaaa">★ 위 학생 주소를 칠판에 적어주세요 ★</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:14px;padding-bottom:18px;position:relative">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--text);color:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">4</div>
+            <div style="width:2px;flex:1;background:var(--border);margin-top:6px"></div>
+          </div>
+          <div style="padding-top:4px;flex:1">
+            <div style="font-size:13px;font-weight:700;margin-bottom:6px">학생 주소를 칠판에 적기</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.7">
+              학생들은 각자 컴퓨터 브라우저(크롬·엣지)에서 그 주소를 입력하면 접속됩니다.<br>
+              설치 불필요, 주소 입력만으로 완료.
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:14px">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">5</div>
+          </div>
+          <div style="padding-top:4px;flex:1">
+            <div style="font-size:13px;font-weight:700;margin-bottom:6px">화면 방송 시작 (선택)</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.7">
+              교사용 관리 → <strong style="color:var(--text)">화면 방송</strong> 탭 → <strong style="color:var(--text)">방송 시작</strong> 클릭<br>
+              웹캠 또는 화면 공유를 선택하면 학생 화면에 실시간으로 전송됩니다.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:18px;background:var(--blue-bg);border-radius:var(--rad);padding:12px;font-size:12px;color:var(--blue);line-height:1.7">
+        <strong>주의사항</strong><br>
+        • 교사 컴퓨터와 학생 컴퓨터가 <strong>같은 와이파이(교내망)</strong>에 연결되어 있어야 합니다<br>
+        • 수업 종료 후 검은 창에서 <strong>Ctrl+C</strong>를 눌러 서버를 종료하세요<br>
+        • 학생들은 별도 설치 없이 브라우저만 있으면 접속 가능합니다
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+window.onerror = function(msg, src, line, col, err) {
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;bottom:10px;left:10px;right:10px;background:#FEF2F2;color:#991B1B;padding:10px 14px;border-radius:8px;font-size:12px;z-index:99999;border:1px solid #FECACA';
+  d.textContent = 'JS 오류: ' + msg + ' (줄 ' + line + ')';
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(), 8000);
+  return false;
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* ══════════════════════════════════════════
+   전역 상태
+══════════════════════════════════════════ */
+const TEACHER_PW = '0391';
+
+/* ── Supabase 설정 ── */
+// ★ 아래 두 값을 Supabase 대시보드에서 복사해서 붙여넣으세요
+const SB_URL  = 'https://cytczcwmcusytjgiqvsv.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5dGN6Y3dtY3VzeXRqZ2lxdnN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNzE4NDQsImV4cCI6MjA5NDc0Nzg0NH0.-h5V1yXGsPvkYd_N4x4ReFl4BLuuHqh4vA6jUihrcQ8';
+
+let sb = null;
+function initSupabase() {
+  if (!window.supabase) return false;
+  if (!SB_URL || SB_URL === 'YOUR_SUPABASE_URL') return false;
+  if (!SB_ANON || SB_ANON === 'YOUR_SUPABASE_ANON_KEY') return false;
+  try {
+    sb = window.supabase.createClient(SB_URL, SB_ANON);
+    return true;
+  } catch(e) { console.error('Supabase 초기화 실패:', e); return false; }
+}
+const DEF_QS = [
+  '티처블머신으로 학습시킨 자세 분류 모델의 정확도는 어떠했나요? 어떤 점이 어려웠나요?',
+  '헥사보드에서 가속도/자이로 센서 데이터를 확인했을 때 어떤 점이 인상 깊었나요?',
+  'AI 모델 판별 결과를 헥사보드에 전송하여 진동/LED 피드백이 구현되었을 때 느낀 점을 작성하세요.',
+  '오늘 수업을 통해 스포츠 생활과 빅데이터 분석의 융합에서 새롭게 알게 된 점이나 더 탐구하고 싶은 점은?'
+];
+// AI_NOTES는 더 이상 사용하지 않음 — updateAiNote()가 apiKeys 등록 상태를 보고 동적으로 문구를 생성함
+const ICE_SERVERS = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun2.l.google.com:19302' },
+  { urls: 'stun:stun3.l.google.com:19302' },
+  { urls: 'stun:stun4.l.google.com:19302' },
+  { urls: 'stun:stun.stunprotocol.org:3478' },
+  { urls: 'stun:stun.voip.blackberry.com:3478' },
+  {
+    urls: 'turn:openrelay.metered.ca:80',
+    username: 'openrelayproject',
+    credential: 'openrelayproject'
+  },
+  {
+    urls: 'turn:openrelay.metered.ca:443',
+    username: 'openrelayproject',
+    credential: 'openrelayproject'
+  },
+  {
+    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+    username: 'openrelayproject',
+    credential: 'openrelayproject'
+  }
+];
+
+let questions = [...DEF_QS], submissions = [], selectedAI = 'claude', rfFilter = 'all';
+let localStream = null, isMirrored = false, zoomLevel = 1, vZoom = 1;
+let ws = null;                         // WebSocket to signaling server
+let peerConns = {};                    // broadcaster: viewerId → RTCPeerConnection
+let viewerPc = null;                   // viewer: single RTCPeerConnection
+let viewerPollTimer = null;
+const MY_ID = 'v_' + Math.random().toString(36).slice(2, 8);
+
+/* WebSocket 서버 주소 – 현재 호스트 기준 자동 설정 */
+function getSavedServerIP() {
+  return localStorage.getItem('server-ip') || location.hostname;
+}
+// https 페이지에서는 ws:// 불가 → 로컬 서버 접속 시에만 WS 사용
+const IS_HTTPS = location.protocol === 'https:';
+let WS_URL = 'ws://' + getSavedServerIP() + ':3000';
+
+/* ══════════════════════════════════════════
+   유틸
+══════════════════════════════════════════ */
+function showLoading(m){ }
+function hideLoading(){ }
+function updateLabels() {
+  const n1 = document.getElementById('ws-n1').value.trim();
+  const n2 = document.getElementById('ws-n2').value.trim();
+  document.getElementById('ref-lbl-1').textContent = (n1||'팀원 1') + ' 소감문';
+  document.getElementById('ref-lbl-2').textContent = (n2||'팀원 2') + ' 소감문';
+}
+
+/* ══════════════════════════════════════════
+   화면 전환
+══════════════════════════════════════════ */
+async function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  loadSavedIP(); loadSbInputs();
+  if (id === 'worksheet') {
+    await loadQs();
+    renderWSQs();
+    updateLabels();
+    const wp = document.getElementById('ws-panel-write');
+    const vp = document.getElementById('ws-panel-view');
+    const ep = document.getElementById('ws-panel-edit');
+    if(wp) wp.style.display = '';
+    if(vp) vp.style.display = 'none';
+    if(ep) ep.style.display = 'none';
+    document.querySelectorAll('.ws-tab').forEach((b,i) => b.classList.toggle('active', i===0));
+  }
+  if (id === 'teacher')    { await renderTeacher(); }
+  if (id === 'materials')   { loadMaterials(); }
+  if (id === 'viewer') {
+    const vw = document.getElementById('viewer-https-warning');
+    if (vw) vw.style.display = IS_HTTPS ? 'block' : 'none';
+    if (!IS_HTTPS) connectViewer();
+  }
+}
+function teacherLogin() {
+  const pw = document.getElementById('teacher-pw').value;
+  const err = document.getElementById('login-err');
+  if (pw === TEACHER_PW) { err.style.display='none'; document.getElementById('teacher-pw').value=''; go('teacher'); }
+  else err.style.display = 'block';
+}
+function switchTab(btn, id) {
+  document.querySelectorAll('.t-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.t-content').forEach(t => t.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  if (id === 'tab-qmgmt') renderQEditor();
+  if (id === 'tab-seteuk') {
+    const inp = document.getElementById('seteuk-prompt-input');
+    if (inp) inp.value = localStorage.getItem('seteuk-prompt') || '';
+    loadApiKeys();
+    // GPT 버튼 기본 선택 표시
+    setTimeout(() => {
+      const gptBtn = document.getElementById('ai-btn-gpt');
+      if (gptBtn) selAI('gpt', gptBtn);
+    }, 100);
+  }
+  if (id === 'tab-materials-mgr') loadMaterialsMgr();
+  if (id === 'tab-broadcast') {
+    const w = document.getElementById('https-warning');
+    if (w) w.style.display = IS_HTTPS ? 'block' : 'none';
+  }
+}
+function selAI(ai, btn) {
+  selectedAI = ai;
+  document.querySelectorAll('.ai-chip').forEach(c => c.classList.remove('sel'));
+  btn.classList.add('sel');
+  updateAiNote();
+}
+
+/* ══════════════════════════════════════════
+   WebSocket 공통 연결
+══════════════════════════════════════════ */
+function connectWS(onOpen) {
+  WS_URL = 'ws://' + getSavedServerIP() + ':3000';
+  if (IS_HTTPS) {
+    // HTTPS에서는 ws:// 연결 불가 — 안내 메시지만 표시
+    const statusEl = document.getElementById('teacher-badge') || document.getElementById('viewer-status');
+    console.warn('HTTPS 환경에서는 실물화상기를 사용할 수 없습니다. http://교사IP:3000 으로 접속해 주세요.');
+    return;
+  }
+  if (ws && ws.readyState === WebSocket.OPEN) { onOpen(); return; }
+  ws = new WebSocket(WS_URL);
+  ws.onopen = () => onOpen();
+  ws.onerror = () => console.warn('WS 연결 실패 – 서버가 실행 중인지 확인하세요');
+}
+
+/* ══════════════════════════════════════════
+   교사 방송 (Broadcaster)
+══════════════════════════════════════════ */
+async function startBroadcast() {
+  const src = document.getElementById('cam-src').value;
+  try {
+    localStream = src === 'screen'
+      ? await navigator.mediaDevices.getDisplayMedia({ video: { width:{ideal:1920}, height:{ideal:1080} }, audio: false })
+      : await navigator.mediaDevices.getUserMedia({ video: { width:{ideal:1280}, height:{ideal:720} }, audio: false });
+  } catch(e) {
+    const st = document.getElementById('bc-status');
+    st.className = 'smsg err'; st.style.display = 'block';
+    st.textContent = '카메라/화면 접근이 거부됐습니다. 브라우저에서 권한을 허용해 주세요.';
+    return;
+  }
+
+  document.getElementById('teacher-video').srcObject = localStream;
+  document.getElementById('teacher-badge').className = 'cam-badge live';
+  document.getElementById('teacher-badge').innerHTML = '<div class="cam-dot"></div> LIVE';
+  document.getElementById('bc-start').style.display = 'none';
+  document.getElementById('bc-stop').style.display = 'inline-flex';
+  const st = document.getElementById('bc-status');
+  st.className = 'smsg ok'; st.style.display = 'block';
+  st.textContent = '방송 중입니다. 학생들이 접속하면 자동으로 연결됩니다.';
+
+  localStream.getVideoTracks()[0].addEventListener('ended', stopBroadcast);
+
+  connectWS(() => {
+    ws.send(JSON.stringify({ type: 'register-broadcaster' }));
+    ws.onmessage = handleBroadcasterMessage;
+  });
+}
+
+function handleBroadcasterMessage(e) {
+  const msg = JSON.parse(e.data);
+  if (msg.type === 'new-viewer') createOfferFor(msg.viewerId);
+  if (msg.type === 'answer') {
+    const pc = peerConns[msg.viewerId];
+    if (pc) pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+  }
+  if (msg.type === 'ice-candidate' && msg.candidate) {
+    const pc = peerConns[msg.viewerId];
+    if (pc) pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+  }
+  if (msg.type === 'viewer-count') {
+    document.getElementById('viewer-count').textContent = msg.count;
+  }
+}
+
+async function createOfferFor(viewerId) {
+  const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS, iceCandidatePoolSize: 10 });
+  peerConns[viewerId] = pc;
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  pc.onicecandidate = e => {
+    if (e.candidate) ws.send(JSON.stringify({ type: 'ice-candidate', candidate: e.candidate, viewerId }));
+  };
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  ws.send(JSON.stringify({ type: 'offer', sdp: pc.localDescription, viewerId }));
+}
+
+function stopBroadcast() {
+  if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+  Object.values(peerConns).forEach(pc => pc.close()); peerConns = {};
+  document.getElementById('teacher-video').srcObject = null;
+  document.getElementById('teacher-badge').className = 'cam-badge off';
+  document.getElementById('teacher-badge').innerHTML = '<i class="ti ti-video-off" style="font-size:11px"></i> 대기 중';
+  document.getElementById('bc-start').style.display = 'inline-flex';
+  document.getElementById('bc-stop').style.display = 'none';
+  document.getElementById('viewer-count').textContent = '0';
+  const st = document.getElementById('bc-status');
+  st.className = 'smsg info'; st.style.display = 'block'; st.textContent = '방송이 종료됐습니다.';
+  if (ws && ws.readyState === WebSocket.OPEN) ws.close();
+}
+
+/* ══════════════════════════════════════════
+   학생 시청 (Viewer)
+══════════════════════════════════════════ */
+function connectViewer() {
+  if (viewerPollTimer) { clearTimeout(viewerPollTimer); viewerPollTimer = null; }
+  setViewerStatus('waiting', '서버에 연결 중...');
+
+  connectWS(() => {
+    ws.send(JSON.stringify({ type: 'register-viewer', viewerId: MY_ID }));
+    ws.onmessage = handleViewerMessage;
+  });
+  ws.onerror = () => setViewerStatus('error', '서버 연결 실패. 선생님 컴퓨터의 서버가 실행 중인지 확인하세요.');
+  ws.onclose = () => {
+    if (document.getElementById('viewer').classList.contains('active')) {
+      setViewerStatus('waiting', '연결이 끊어졌습니다. 5초 후 재연결합니다...');
+      viewerPollTimer = setTimeout(connectViewer, 5000);
+    }
+  };
+}
+
+async function handleViewerMessage(e) {
+  const msg = JSON.parse(e.data);
+  if (msg.type === 'no-broadcaster') {
+    setViewerStatus('waiting', '교사가 방송을 시작하면 자동으로 연결됩니다');
+    viewerPollTimer = setTimeout(() => ws.send(JSON.stringify({ type: 'request-offer', viewerId: MY_ID })), 3000);
+    return;
+  }
+  if (msg.type === 'broadcaster-joined') {
+    setViewerStatus('waiting', '방송 발견! 연결 중...');
+    ws.send(JSON.stringify({ type: 'request-offer', viewerId: MY_ID }));
+    return;
+  }
+  if (msg.type === 'broadcaster-left') {
+    setViewerStatus('waiting', '방송이 종료됐습니다. 교사가 다시 시작하면 연결됩니다.');
+    if (viewerPc) { viewerPc.close(); viewerPc = null; }
+    document.getElementById('viewer-badge').className = 'cam-badge off';
+    document.getElementById('viewer-badge').innerHTML = '<i class="ti ti-wifi-off" style="font-size:11px"></i> 방송 종료';
+    document.getElementById('viewer-sub').textContent = '방송 종료';
+    return;
+  }
+  if (msg.type === 'offer') {
+    try {
+      if (viewerPc) { try { viewerPc.close(); } catch(e) {} viewerPc = null; }
+      viewerPc = new RTCPeerConnection({ iceServers: ICE_SERVERS, iceCandidatePoolSize: 10 });
+      viewerPc.ontrack = e => {
+        const video = document.getElementById('viewer-video');
+        if (video) video.srcObject = e.streams[0];
+        setViewerStatus('connected', '연결됨 — WebRTC 실시간 스트리밍');
+        const badge = document.getElementById('viewer-badge');
+        if (badge) { badge.className = 'cam-badge live'; badge.innerHTML = '<div class="cam-dot"></div> LIVE'; }
+        const sub = document.getElementById('viewer-sub');
+        if (sub) sub.textContent = 'LIVE 중';
+      };
+      viewerPc.onicecandidate = ev => {
+        if (ev.candidate && ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'ice-candidate', candidate: ev.candidate, viewerId: MY_ID }));
+        }
+      };
+      viewerPc.onconnectionstatechange = () => {
+        if (viewerPc && (viewerPc.connectionState === 'failed' || viewerPc.connectionState === 'disconnected')) {
+          setViewerStatus('waiting', '연결 끊김. 재연결 중...');
+          setTimeout(connectViewer, 2000);
+        }
+      };
+      await viewerPc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+      const answer = await viewerPc.createAnswer();
+      await viewerPc.setLocalDescription(answer);
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'answer', sdp: viewerPc.localDescription }));
+      }
+    } catch(e) {
+      console.error('WebRTC offer 처리 오류:', e);
+      setViewerStatus('error', '연결 오류: ' + e.message);
+      if (viewerPc) { try { viewerPc.close(); } catch(e2) {} viewerPc = null; }
+      setTimeout(connectViewer, 3000);
+    }
+    return;
+  }
+  if (msg.type === 'ice-candidate' && msg.candidate && viewerPc) {
+    viewerPc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+  }
+}
+
+function setViewerStatus(type, text) {
+  const el = document.getElementById('viewer-status');
+  const icons = { waiting: 'ti-wifi-off', connected: 'ti-wifi', error: 'ti-alert-circle' };
+  el.className = 'conn-status ' + type;
+  el.innerHTML = `<i class="ti ${icons[type]}" style="font-size:16px"></i><span>${text}</span>`;
+}
+
+function stopViewer() {
+  if (viewerPollTimer) { clearTimeout(viewerPollTimer); viewerPollTimer = null; }
+  if (viewerPc) { viewerPc.close(); viewerPc = null; }
+  if (ws) { ws.close(); ws = null; }
+}
+
+async function togglePiP() {
+  const video = document.getElementById('viewer-video');
+  if (document.pictureInPictureElement) { await document.exitPictureInPicture(); }
+  else if (video.srcObject && video.requestPictureInPicture) { try { await video.requestPictureInPicture(); } catch(e) {} }
+}
+
+/* ══════════════════════════════════════════
+   줌 / 미러 / 스냅샷
+══════════════════════════════════════════ */
+function adjZoom(d) { zoomLevel = Math.max(.5, Math.min(3, zoomLevel+d)); applyZoom(); }
+function resetZoom() { zoomLevel = 1; applyZoom(); }
+function applyZoom() {
+  document.getElementById('teacher-video').style.transform = (isMirrored?'scaleX(-1) ':'') + 'scale(' + zoomLevel + ')';
+  document.getElementById('zoom-lbl').textContent = Math.round(zoomLevel*100) + '%';
+}
+function toggleMirror() { isMirrored = !isMirrored; applyZoom(); }
+function adjVZoom(d) {
+  vZoom = Math.max(.5, Math.min(3, vZoom+d));
+  const v = document.getElementById('viewer-video');
+  v.style.transform = 'scale(' + vZoom + ')'; v.style.transformOrigin = 'top left';
+  document.getElementById('v-zoom-lbl').textContent = Math.round(vZoom*100) + '%';
+}
+function resetVZoom() { vZoom=1; const v=document.getElementById('viewer-video'); v.style.transform=''; document.getElementById('v-zoom-lbl').textContent='100%'; }
+function takeSnapshot() {
+  const video = document.getElementById('teacher-video');
+  if (!video.videoWidth) { alert('방송을 먼저 시작하세요.'); return; }
+  const c = document.getElementById('snap-canvas');
+  c.width = video.videoWidth; c.height = video.videoHeight;
+  c.getContext('2d').drawImage(video, 0, 0);
+  const area = document.getElementById('snap-area');
+  const img = document.createElement('img');
+  img.src = c.toDataURL('image/png');
+  img.style.cssText = 'width:100%;border-radius:var(--rad);border:1px solid var(--border);margin-top:10px';
+  const dl = document.createElement('a');
+  dl.href = img.src; dl.download = 'snapshot_' + Date.now() + '.png';
+  dl.style.cssText = 'display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--rad);font-size:12px;color:var(--text);text-decoration:none';
+  dl.innerHTML = '<i class="ti ti-download"></i> 이미지 저장';
+  area.innerHTML = ''; area.appendChild(img); area.appendChild(dl);
+}
+function toggleFullscreen(id) {
+  const el = document.getElementById(id);
+  if (document.fullscreenElement) document.exitFullscreen();
+  else if (el.requestFullscreen) el.requestFullscreen();
+}
+
+/* ══════════════════════════════════════════
+   로컬 스토리지 (활동지 데이터)
+══════════════════════════════════════════ */
+/* ── localStorage 헬퍼 (Supabase 미설정 폴백용) ── */
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+function lsSet(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+
+/* ── Supabase 헬퍼 ── */
+async function sbGet(table, filters={}) {
+  if (!sb) return null;
+  let q = sb.from(table).select('*');
+  for (const [col, val] of Object.entries(filters)) q = q.eq(col, val);
+  const { data, error } = await q;
+  if (error) { console.error(error); return null; }
+  return data;
+}
+async function sbUpsert(table, row) {
+  if (!sb) return false;
+  const { error } = await sb.from(table).upsert(row, { onConflict: 'id' });
+  if (error) { console.error(error); return false; }
+  return true;
+}
+
+/* ── 질문 로드 ── */
+async function loadQs() {
+  if (sb) {
+    const rows = await sbGet('settings', { key: 'questions' });
+    if (rows && rows.length > 0) { questions = JSON.parse(rows[0].value); return; }
+  }
+  const r = lsGet('questions'); if (r) questions = r;
+}
+
+/* ── 제출 데이터 로드 ── */
+async function loadSubmissions() {
+  submissions = [];
+  if (sb) {
+    try {
+      const { data, error } = await sb.from('submissions').select('*').order('submitted_at', { ascending: true });
+      if (!error && data) {
+        submissions = data.map(r => ({
+          _id: r.id, n1: r.name1, id1: r.student_id1, c1: r.class1,
+          n2: r.name2, id2: r.student_id2,
+          answers: r.answers || {},
+          ref1: r.reflection1 || '', ref2: r.reflection2 || '',
+          seteuk1: r.seteuk1 || '', seteuk2: r.seteuk2 || '',
+          obs1: r.obs1 || '', obs2: r.obs2 || '',
+          submittedAt: r.submitted_at
+        }));
+      }
+    } catch(e) { console.error('제출 목록 로드 실패:', e); }
+    return;
+  }
+  try {
+    const keys = await window.storage.list('team:');
+    if (keys && keys.keys) for (const k of keys.keys) {
+      try { const r = await window.storage.get(k); if(r) submissions.push(JSON.parse(r.value)); } catch(e) {}
+    }
+  } catch(e) {}
+}
+
+/* ══════════════════════════════════════════
+   교사 대시보드
+══════════════════════════════════════════ */
+async function renderTeacher() { await loadQs(); await loadSubmissions(); renderOverview(); renderTeamSel(); renderRfList(); renderSkList(); updateAiNote(); }
+
+function renderOverview() {
+  const body = document.getElementById('overview-body'), empty = document.getElementById('overview-empty');
+  document.getElementById('st-teams').textContent = submissions.length;
+  document.getElementById('st-act').textContent = submissions.length * 2;
+  document.getElementById('st-r1').textContent = submissions.filter(s=>s.ref1&&s.ref1.trim()).length;
+  document.getElementById('st-r2').textContent = submissions.filter(s=>s.ref2&&s.ref2.trim()).length;
+  body.innerHTML = '';
+  if (!submissions.length) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  submissions.forEach((s, i) => {
+    const h1 = s.ref1 && s.ref1.trim(), h2 = s.ref2 && s.ref2.trim();
+    const badge1 = h1
+      ? '<span class="s-ok">' + (s.n1||'1') + ' 완료</span>'
+      : '<span class="s-no">' + (s.n1||'1') + ' 미제출</span>';
+    const badge2 = h2
+      ? '<span class="s-ok">' + (s.n2||'2') + ' 완료</span>'
+      : '<span class="s-no">' + (s.n2||'2') + ' 미제출</span>';
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + (i+1) + '</td>'
+      + '<td><strong>' + (s.n1||'-') + '</strong></td>'
+      + '<td><strong>' + (s.n2||'-') + '</strong></td>'
+      + '<td>' + (s.id1||'-') + '</td>'
+      + '<td>' + (s.id2||'-') + '</td>'
+      + '<td>' + (s.c1||'-') + '</td>'
+      + '<td><span class="s-ok"><i class="ti ti-check" style="font-size:10px"></i> 제출</span></td>'
+      + '<td style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">'
+      + badge1 + badge2
+      + '<button class="vbtn" onclick="viewTeam(\'' + s.id1 + '\')">보기</button>'
+      + '<button class="vbtn" style="color:var(--sport);border-color:var(--sport)" onclick="deleteSubmission(\'' + s.id1 + '\',\'' + (s.n1||'') + '\',\'' + (s.n2||'') + '\')">삭제</button></td>';
+    body.appendChild(tr);
+  });
+}
+function renderTeamSel() {
+  const sel = document.getElementById('team-sel');
+  sel.innerHTML = '<option value="">-- 팀을 선택하세요 --</option>';
+  submissions.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.id1;
+    o.textContent = (s.id1||'?')+'_'+(s.n1||'?')+' & '+(s.id2||'?')+'_'+(s.n2||'?');
+    sel.appendChild(o);
+  });
+}
+function viewTeam(id1) { switchTab(document.querySelectorAll('.t-tab')[2],'tab-detail'); document.getElementById('team-sel').value=id1; showTeamDetail(); }
+function showTeamDetail() {
+  const id1 = document.getElementById('team-sel').value;
+  const area = document.getElementById('team-detail');
+  if (!id1) { area.innerHTML='<div class="empty-st">팀을 선택하면 활동지 내용이 표시됩니다</div>'; return; }
+  const s = submissions.find(x => x.id1 === id1);
+  if (!s) { area.innerHTML='<div class="empty-st">데이터를 찾을 수 없습니다</div>'; return; }
+  const ans = s.answers || {};
+
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  // 헤더 (팀 정보 + 삭제 버튼)
+  const header = document.createElement('div');
+  header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px';
+  header.innerHTML = '<div style="display:flex;gap:12px;flex-wrap:wrap">'
+    + '<div style="display:flex;align-items:center;gap:7px"><span class="mtag m1" style="font-size:11px">팀원1</span>'
+    + '<span style="font-size:13px;font-weight:700">' + (s.n1||'') + '</span>'
+    + '<span style="font-size:11px;color:var(--text3)">' + (s.id1||'') + '</span></div>'
+    + '<div style="display:flex;align-items:center;gap:7px"><span class="mtag m2" style="font-size:11px">팀원2</span>'
+    + '<span style="font-size:13px;font-weight:700">' + (s.n2||'') + '</span>'
+    + '<span style="font-size:11px;color:var(--text3)">' + (s.id2||'') + '</span></div>'
+    + '</div>';
+
+  const delBtn = document.createElement('button');
+  delBtn.className = 'abtn';
+  delBtn.style.cssText = 'color:var(--sport);border-color:var(--sport);font-size:12px;flex-shrink:0';
+  delBtn.innerHTML = '<i class="ti ti-trash"></i> 활동지 삭제';
+  delBtn.addEventListener('click', () => deleteSubmission(s.id1, s.n1, s.n2));
+  header.appendChild(delBtn);
+  card.appendChild(header);
+
+  // 공동 활동지
+  const qLabel = document.createElement('div');
+  qLabel.style.cssText = 'font-size:10px;font-weight:700;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em';
+  qLabel.textContent = '공동 활동지';
+  card.appendChild(qLabel);
+
+  questions.forEach((q, i) => {
+    const block = document.createElement('div');
+    block.className = 'ans-block';
+    block.innerHTML = '<div class="ans-q">Q' + (i+1) + '. ' + (typeof q === 'object' ? q.text : q) + '</div>'
+      + '<div class="ans-a">' + renderAnsValue(ans[i], i) + '</div>';
+    card.appendChild(block);
+  });
+
+  // 소감문
+  const rLabel = document.createElement('div');
+  rLabel.style.cssText = 'font-size:10px;font-weight:700;color:var(--text3);margin:12px 0 8px;text-transform:uppercase;letter-spacing:.06em';
+  rLabel.textContent = '개인 소감문';
+  card.appendChild(rLabel);
+
+  [['m1', s.n1, s.ref1], ['m2', s.n2, s.ref2]].forEach(([tag, name, ref]) => {
+    const mb = document.createElement('div');
+    mb.className = 'mem-block';
+    mb.innerHTML = '<div class="mem-hdr"><span class="mtag ' + tag + '">' + (name||'') + ' 소감문</span></div>'
+      + '<div style="font-size:13px;line-height:1.65">' + (ref || '<span style="color:var(--text3)">미작성</span>') + '</div>';
+    card.appendChild(mb);
+  });
+
+  area.innerHTML = '';
+  area.appendChild(card);
+}
+
+
+function renderRfList(f) {
+  f = f||rfFilter;
+  const list=document.getElementById('rf-list'), empty=document.getElementById('rf-empty');
+  let data=submissions;
+  if(f==='m1') data=submissions.filter(s=>s.ref1&&s.ref1.trim());
+  else if(f==='m2') data=submissions.filter(s=>s.ref2&&s.ref2.trim());
+  list.innerHTML='';
+  if(!data.length){empty.style.display='';return;} empty.style.display='none';
+  data.forEach(s=>{
+    const h1=s.ref1&&s.ref1.trim(),h2=s.ref2&&s.ref2.trim();
+    const div=document.createElement('div'); div.className='card'; div.style.marginBottom='11px';
+    div.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:11px;flex-wrap:wrap;align-items:center"><span class="mtag m1" style="font-size:11px">${s.n1||'팀원1'}</span><span class="mtag m2" style="font-size:11px">${s.n2||'팀원2'}</span><span style="font-size:11px;color:var(--text2)">${s.c1||''}반</span>${h1&&h2?'<span class="s-ok" style="font-size:10px">양쪽 완료</span>':h1?`<span class="s-ok" style="font-size:10px">${s.n1} 완료</span><span class="s-no" style="font-size:10px">${s.n2} 미제출</span>`:h2?`<span class="s-no" style="font-size:10px">${s.n1} 미제출</span><span class="s-ok" style="font-size:10px">${s.n2} 완료</span>`:'<span class="s-no" style="font-size:10px">양쪽 미제출</span>'}</div><div class="mem-block"><div class="mem-hdr"><span class="mtag m1">${s.n1||'팀원1'} 소감문</span></div><div style="font-size:13px;line-height:1.65">${s.ref1||'<span style="color:var(--text2);font-size:12px">미제출</span>'}</div></div><div class="mem-block"><div class="mem-hdr"><span class="mtag m2">${s.n2||'팀원2'} 소감문</span></div><div style="font-size:13px;line-height:1.65">${s.ref2||'<span style="color:var(--text2);font-size:12px">미제출</span>'}</div></div>`;
+    list.appendChild(div);
+  });
+}
+function filterRf(f,btn){rfFilter=f;document.querySelectorAll('[id^="rf-"]').forEach(b=>b.classList.remove('p'));btn.classList.add('p');renderRfList(f);}
+function renderSkList() {
+  const list = document.getElementById('sk-list');
+  const empty = document.getElementById('sk-empty');
+  list.innerHTML = '';
+  if (!submissions.length) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+
+  submissions.forEach(s => {
+    [1, 2].forEach(m => {
+      const name = m === 1 ? s.n1 : s.n2;
+      const sid  = m === 1 ? s.id1 : s.id2;
+      const tag  = m === 1 ? 'm1' : 'm2';
+      const obsVal = m === 1 ? (s.obs1||'') : (s.obs2||'');
+      const skVal  = m === 1 ? (s.seteuk1||'') : (s.seteuk2||'');
+      const ans = s.answers || {};
+      const ref = m === 1 ? (s.ref1||'') : (s.ref2||'');
+
+      const wrap = document.createElement('div');
+      wrap.className = 'sk-wrap';
+
+      // ── 헤더
+      const hdr = document.createElement('div');
+      hdr.className = 'sk-hdr';
+      hdr.innerHTML = '<div style="display:flex;align-items:center;gap:8px">'
+        + '<span class="mtag ' + tag + '" style="font-size:12px">' + (name||('팀원'+m)) + '</span>'
+        + '<span style="font-size:12px;color:var(--text3)">' + (sid||'') + '</span>'
+        + '</div>'
+        + '<div style="display:flex;align-items:center;gap:7px">'
+        + '<span id="sk-st-' + s.id1 + '-' + m + '" style="font-size:11px;color:var(--text3)"></span>'
+        + '</div>';
+      wrap.appendChild(hdr);
+
+      // ── 좌우 분할 바디
+      const body = document.createElement('div');
+      body.className = 'sk-body';
+
+      // ── 왼쪽: 활동지 내용 + 소감문 + 관찰내용
+      const left = document.createElement('div');
+      left.className = 'sk-left';
+
+      // 활동지 질문 + 답변
+      const qTitle = document.createElement('div');
+      qTitle.className = 'sk-section-title';
+      qTitle.innerHTML = '<i class="ti ti-clipboard-text" style="font-size:12px;margin-right:4px"></i>활동지';
+      left.appendChild(qTitle);
+
+      questions.forEach((q, i) => {
+        const qblock = document.createElement('div');
+        qblock.className = 'sk-qblock';
+        qblock.innerHTML = '<div class="sk-qlabel">Q' + (i+1) + '. ' + q + '</div>'
+          + '<div class="sk-qanswer">' + renderAnsValue(ans[i], i) + '</div>';
+        left.appendChild(qblock);
+      });
+
+      // 소감문
+      const refTitle = document.createElement('div');
+      refTitle.className = 'sk-section-title';
+      refTitle.style.marginTop = '12px';
+      refTitle.innerHTML = '<i class="ti ti-writing" style="font-size:12px;margin-right:4px"></i>개인 소감문';
+      left.appendChild(refTitle);
+
+      const refBlock = document.createElement('div');
+      refBlock.className = 'sk-qblock';
+      refBlock.innerHTML = '<div class="sk-qanswer">' + (ref || '<span style="color:var(--text3);font-size:11px">미작성</span>') + '</div>';
+      left.appendChild(refBlock);
+
+      // 교사 관찰 내용
+      const obsTitle = document.createElement('div');
+      obsTitle.className = 'sk-section-title';
+      obsTitle.style.cssText = 'margin-top:12px;color:var(--accent)';
+      obsTitle.innerHTML = '<i class="ti ti-eye" style="font-size:12px;margin-right:4px"></i>교사 관찰 내용';
+      left.appendChild(obsTitle);
+
+      const obsArea = document.createElement('textarea');
+      obsArea.className = 'fta';
+      obsArea.id = 'obs-' + s.id1 + '-' + m;
+      obsArea.style.cssText = 'min-height:70px;border-color:var(--accent);font-size:12px;margin-top:4px';
+      obsArea.placeholder = '이 학생에 대한 관찰 내용을 입력하세요. 세특 생성 시 함께 반영됩니다.';
+      obsArea.value = obsVal;
+      left.appendChild(obsArea);
+
+      // 관찰내용 저장 버튼
+      const obsSaveRow = document.createElement('div');
+      obsSaveRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:6px';
+      const obsSaveBtn = document.createElement('button');
+      obsSaveBtn.className = 'abtn';
+      obsSaveBtn.style.cssText = 'font-size:11px;border-color:var(--accent);color:var(--accent)';
+      obsSaveBtn.innerHTML = '<i class="ti ti-device-floppy"></i> 관찰 내용 저장';
+      const obsSaveMsg = document.createElement('span');
+      obsSaveMsg.id = 'obs-msg-' + s.id1 + '-' + m;
+      obsSaveMsg.style.cssText = 'font-size:11px;color:var(--accent);display:none';
+      obsSaveBtn.addEventListener('click', () => saveObs(s.id1, m, obsSaveMsg));
+      obsSaveRow.appendChild(obsSaveBtn);
+      obsSaveRow.appendChild(obsSaveMsg);
+      left.appendChild(obsSaveRow);
+
+      body.appendChild(left);
+
+      // ── 오른쪽: 세특 완성
+      const right = document.createElement('div');
+      right.className = 'sk-right';
+
+      const skTitle = document.createElement('div');
+      skTitle.className = 'sk-section-title';
+      skTitle.style.color = 'var(--primary)';
+      skTitle.innerHTML = '<i class="ti ti-certificate" style="font-size:12px;margin-right:4px"></i>생성된 세특';
+      right.appendChild(skTitle);
+
+      const skArea = document.createElement('textarea');
+      skArea.className = 'fta';
+      skArea.id = 'sk-' + s.id1 + '-' + m;
+      skArea.style.cssText = 'flex:1;min-height:200px;font-size:12px;margin-top:4px;resize:vertical';
+      skArea.placeholder = '생성 버튼을 눌러 AI가 세특을 작성합니다...';
+      skArea.value = skVal;
+      right.appendChild(skArea);
+
+      const genRow = document.createElement('div');
+      genRow.style.cssText = 'display:flex;gap:8px;margin-top:8px;align-items:center';
+
+      const genBtn = document.createElement('button');
+      genBtn.className = 'abtn p';
+      genBtn.style.cssText = 'flex:1;justify-content:center;font-size:12px;padding:8px';
+      genBtn.innerHTML = '<i class="ti ti-sparkles"></i> 세특 자동 생성';
+      genBtn.addEventListener('click', function(){ genSeteuk(s.id1, m, genBtn); });
+      genRow.appendChild(genBtn);
+
+      right.appendChild(genRow);
+      body.appendChild(right);
+      wrap.appendChild(body);
+      list.appendChild(wrap);
+    });
+  });
+}
+async function genSeteuk(tid, m, btn) {
+  const s = submissions.find(x => x.id1 === tid);
+  if (!s) return;
+  if (btn) btn.disabled = true;
+  const stEl = document.getElementById('sk-st-' + tid + '-' + m);
+  if (stEl) stEl.textContent = '생성 중...';
+
+  const name    = m === 1 ? s.n1 : s.n2;
+  const sid     = m === 1 ? s.id1 : s.id2;
+  const partner = m === 1 ? s.n2 : s.n1;
+  const ans     = s.answers || {};
+  const ref     = m === 1 ? (s.ref1||'미작성') : (s.ref2||'미작성');
+  const obsEl   = document.getElementById('obs-' + tid + '-' + m);
+  const obs     = (obsEl ? obsEl.value.trim() : '') || (m===1 ? s.obs1||'' : s.obs2||'') || '없음';
+  const saved   = localStorage.getItem('seteuk-prompt') ||
+    '위 내용을 바탕으로 이 학생의 학교생활기록부 세부능력 및 특기사항을 500자 이내로 작성해 주세요. 학생 개인의 활동, 역량, 성장에 초점을 맞추어 전문적인 어조로 작성하세요. 제목 없이 본문만 작성하세요.';
+
+  // 프롬프트 배열로 구성 (줄바꿈 문자 문제 회피)
+  const NL = String.fromCharCode(10);
+  const qaLines = questions.map((q,i) => 'Q'+(i+1)+' ('+q+'): '+(ans[i]||'미작성')).join(NL);
+  const prompt = [
+    '다음은 스포츠 생활·빅데이터 분석 융합 수업(맞춤형 맨몸 운동 분석 인공지능 만들기, 하루 5차시)에서 2인 1조 팀이 제출한 활동지와 소감문입니다.',
+    NL,
+    '학생 이름: '+name+'  학번: '+sid+'  팀원: '+partner,
+    NL,
+    '[공동 활동지]', qaLines,
+    NL,
+    '[개인 소감문]', ref,
+    NL,
+    '[교사 관찰 내용]', obs,
+    NL,
+    saved
+  ].join(NL);
+
+  try {
+    // 선택된 AI에 따라 API 호출
+    const activeAI = selectedAI || 'gpt';
+    const activeKey = apiKeys[activeAI];
+    if (!activeKey) throw new Error(activeAI + ' API 키가 없습니다. 상단 "API 키 설정" 버튼을 눌러 등록해 주세요.');
+
+    let text = '생성 실패';
+
+    if (activeAI === 'gemini') {
+      // Gemini API v1
+      const gRes = await fetch(
+        'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=' + apiKeys.gemini,
+        {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({contents:[{parts:[{text: prompt}]}]})
+        }
+      );
+      if (!gRes.ok) {
+        const errJson = await gRes.json().catch(()=>({}));
+        throw new Error((errJson.error && errJson.error.message) || ('Gemini 오류 ' + gRes.status));
+      }
+      const gData = await gRes.json();
+      text = (gData.candidates && gData.candidates[0] &&
+              gData.candidates[0].content && gData.candidates[0].content.parts &&
+              gData.candidates[0].content.parts[0].text) || '생성 실패';
+
+    } else if (activeAI === 'gpt') {
+      // OpenAI API
+      const oRes = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json', 'Authorization':'Bearer '+apiKeys.gpt},
+        body: JSON.stringify({model:'gpt-4o-mini', max_tokens:1600, messages:[{role:'user',content:prompt}]})
+      });
+      if (!oRes.ok) {
+        const errJson = await oRes.json().catch(()=>({}));
+        throw new Error((errJson.error && errJson.error.message) || ('OpenAI 오류 ' + oRes.status));
+      }
+      const oData = await oRes.json();
+      text = (oData.choices && oData.choices[0] && oData.choices[0].message.content) || '생성 실패';
+
+    } else if (activeAI === 'claude') {
+      // Claude — Supabase Edge Function 경유
+      const edgeUrl = SB_URL + '/functions/v1/dynamic-processor';
+      const cRes = await fetch(edgeUrl, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json', 'Authorization':'Bearer '+SB_ANON},
+        body: JSON.stringify({prompt: prompt, apiKey: apiKeys.claude})
+      });
+      if (!cRes.ok) {
+        const errJson = await cRes.json().catch(()=>({}));
+        throw new Error(errJson.error || ('Claude 오류 ' + cRes.status));
+      }
+      const cData = await cRes.json();
+      if (cData.error) throw new Error(cData.error);
+      text = cData.text || '생성 실패';
+    }
+
+        // textarea에 결과 쓰기
+    const skEl = document.getElementById('sk-' + tid + '-' + m);
+    if (skEl) skEl.value = text;
+
+    // 메모리 업데이트
+    if (m===1) { s.seteuk1=text; if(obsEl) s.obs1=obsEl.value; }
+    else        { s.seteuk2=text; if(obsEl) s.obs2=obsEl.value; }
+
+    // Supabase 저장
+    if (sb && s._id) {
+      const upd = {updated_at: new Date().toISOString()};
+      upd['seteuk'+m] = text;
+      upd['obs'+m] = obsEl ? obsEl.value.trim() : obs;
+      try { await sb.from('submissions').update(upd).eq('id', s._id); } catch(e) { console.error('Supabase 저장 오류:', e); }
+    }
+
+    if (stEl) { stEl.textContent = '✓ 완료'; setTimeout(()=>{ if(stEl) stEl.textContent=''; }, 2500); }
+  } catch(e) {
+    if (stEl) stEl.textContent = '오류: ' + e.message;
+    console.error('genSeteuk 오류:', e);
+  }
+  if (btn) btn.disabled = false;
+}
+
+/* ══════════════════════════════════════════
+   활동지 / 질문
+══════════════════════════════════════════ */
+function renderWSQs() {
+  document.getElementById('ws-questions').innerHTML = questions.map((q, i) => {
+    const text = typeof q === 'object' ? q.text : q;
+    const type = typeof q === 'object' ? (q.type||'text') : 'text';
+    if (type === 'photo') {
+      return '<div class="card">'
+        + '<div class="qt"><span class="qn">' + (i+1) + '</span><span>' + text + '</span></div>'
+        + '<div style="margin-top:6px">'
+        + '<input type="file" accept="image/*" id="ws-q'+i+'" capture="environment"'
+        + ' style="display:none" onchange="previewPhoto('+i+',this)">'
+        + '<div id="ws-q'+i+'-preview" style="margin-bottom:8px"></div>'
+        + '<label for="ws-q'+i+'" class="abtn p" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:12px">'
+        + '<i class="ti ti-camera"></i> 사진 첨부하기</label>'
+        + '<div style="font-size:11px;color:var(--text3);margin-top:6px">결과물 사진을 찍어 첨부해주세요</div>'
+        + '</div></div>';
+    }
+    return '<div class="card"><div class="qt"><span class="qn">' + (i+1) + '</span><span>' + text + '</span></div>'
+      + '<textarea class="fta" id="ws-q'+i+'" placeholder="여기에 답변을 작성하세요..."></textarea></div>';
+  }).join('');
+}
+function renderQEditor() {
+  const list = document.getElementById('q-ed-list');
+  list.innerHTML = questions.map((q, i) => {
+    const text = typeof q === 'object' ? q.text : q;
+    const type = typeof q === 'object' ? (q.type||'text') : 'text';
+    return '<div class="qe-item">'
+      + '<div class="qe-num">Q'+(i+1)+'</div>'
+      + '<div style="flex:1;display:flex;flex-direction:column;gap:5px">'
+      + '<input class="qe-in" value="' + text.replace(/"/g,'&quot;') + '" id="qe-'+i+'" placeholder="질문 내용">'
+      + '<select class="qe-type" id="qt-'+i+'" style="padding:4px 8px;border:1px solid var(--border-strong);border-radius:var(--rad);font-size:11px;font-family:inherit;background:var(--card);color:var(--text2)">'
+      + '<option value="text"' + (type==='text'?' selected':'') + '>📝 텍스트 답변</option>'
+      + '<option value="photo"' + (type==='photo'?' selected':'') + '>📷 사진 첨부</option>'
+      + '</select>'
+      + '</div>'
+      + '<button class="qe-del" onclick="delQ('+i+')" aria-label="삭제"><i class="ti ti-trash"></i></button>'
+      + '</div>';
+  }).join('');
+}
+function addQ(){questions.push('새 질문을 입력하세요');renderQEditor();}
+function delQ(i){if(questions.length<=1){alert('최소 1개 이상이어야 합니다.');return;}questions.splice(i,1);renderQEditor();}
+async function saveQs(){
+  questions = Array.from(document.querySelectorAll('[id^="qe-"]')).map((el, i) => {
+    const text = el.value.trim();
+    const typeEl = document.getElementById('qt-'+i);
+    const type = typeEl ? typeEl.value : 'text';
+    return type === 'photo' ? { text, type:'photo' } : text;
+  }).filter(v => typeof v === 'object' ? v.text : v);
+  lsSet('questions',questions);
+  if(sb){
+    await sb.from('settings').upsert({key:'questions',value:JSON.stringify(questions)},{onConflict:'key'});
+  }
+  const st=document.getElementById('q-save-st');st.className='smsg ok';st.textContent='✓ 저장됐습니다.';setTimeout(()=>st.style.display='none',3000);
+}
+async function resetQs(){
+  if(!confirm('초기화할까요?'))return;
+  questions=[...DEF_QS];renderQEditor();lsSet('questions',questions);
+  if(sb) await sb.from('settings').upsert({key:'questions',value:JSON.stringify(questions)},{onConflict:'key'});
+}
+
+/* ── 활동지 탭 관리 ── */
+let wsEditId = '';
+let wsEditNames = { n1: '', n2: '' };   // 수정 화면용 원래 이름 보관
+
+/* ── 이름 마스킹 (개인정보 보호) ── */
+function maskName(name) {
+  if (!name) return '';
+  const n = String(name).trim();
+  if (n.length <= 1) return n;
+  if (n.length === 2) return n[0] + '*';                       // 김수 → 김*
+  return n[0] + '*'.repeat(n.length - 2) + n[n.length - 1];    // 김민수 → 김*수
+}
+
+function wsShowTab(tab, btn) {
+  // 탭 버튼 활성화
+  document.querySelectorAll('.ws-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // 패널 전환
+  document.getElementById('ws-panel-write').style.display = tab === 'write' ? '' : 'none';
+  document.getElementById('ws-panel-view').style.display  = tab === 'view'  ? '' : 'none';
+  document.getElementById('ws-panel-edit').style.display  = 'none';
+  // 조회 탭 진입 시 결과 초기화
+  if (tab === 'view') {
+    document.getElementById('ws-search-result').innerHTML = '';
+    document.getElementById('ws-search-name').value = '';
+    document.getElementById('ws-search-id').value = '';
+  }
+}
+
+function wsBackToView() {
+  document.getElementById('ws-panel-edit').style.display = 'none';
+  document.getElementById('ws-panel-view').style.display = '';
+}
+
+/* ── 활동지 작성 저장 ── */
+async function saveWorksheet() {
+  const n1  = document.getElementById('ws-n1').value.trim();
+  const id1 = document.getElementById('ws-id1').value.trim();
+  const n2  = document.getElementById('ws-n2').value.trim();
+  const id2 = document.getElementById('ws-id2').value.trim();
+  const st  = document.getElementById('ws-status');
+  if (!n1||!id1||!n2||!id2) { st.className='smsg err'; st.textContent='두 팀원의 이름과 학번을 모두 입력해 주세요.'; return; }
+  if (!sb) { st.className='smsg err'; st.textContent='DB가 연결되지 않았습니다.'; return; }
+  showLoading('저장 중...');
+  // 사진 타입 질문 포함 answers 처리
+  const answers = {};
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i];
+    const type = typeof q === 'object' ? (q.type || 'text') : 'text';
+    const el = document.getElementById('ws-q' + i);
+    if (!el) continue;
+    if (type === 'photo') {
+      if (el.files && el.files[0]) {
+        // Supabase Storage에 업로드
+        st.className = 'smsg info'; st.textContent = '사진 업로드 중... (' + (i+1) + '/' + questions.length + ')';
+        const url = await uploadPhotoAnswer(i, id1);
+        answers[i] = url || '';
+      } else {
+        answers[i] = ''; // 사진 미첨부
+      }
+    } else {
+      answers[i] = el.value ? el.value.trim() : '';
+    }
+  }
+  const row = {
+    name1: n1, student_id1: id1, class1: '', name2: n2, student_id2: id2,
+    answers,
+    reflection1: document.getElementById('ws-ref1').value.trim(),
+    reflection2: document.getElementById('ws-ref2').value.trim(),
+    updated_at: new Date().toISOString()
+  };
+  try {
+    const { data: existing } = await sb.from('submissions').select('id').eq('student_id1', id1).maybeSingle();
+    let error;
+    if (existing) {
+      const r = await sb.from('submissions').update(row).eq('id', existing.id); error = r.error;
+    } else {
+      row.submitted_at = new Date().toISOString();
+      const r = await sb.from('submissions').insert(row); error = r.error;
+    }
+    if (error) throw error;
+    st.className = 'smsg ok'; st.textContent = '✓ 활동지가 제출되었습니다!';
+  } catch(e) { st.className = 'smsg err'; st.textContent = '저장 실패: ' + e.message; }
+  hideLoading();
+}
+
+/* ── 활동지 검색 ── */
+async function wsSearch() {
+  const name   = document.getElementById('ws-search-name').value.trim();
+  const id1    = document.getElementById('ws-search-id').value.trim();
+  const result = document.getElementById('ws-search-result');
+
+  if (!name && !id1) {
+    result.innerHTML = '<div class="smsg err" style="display:block">이름 또는 학번을 입력해 주세요.</div>';
+    return;
+  }
+  if (!sb) {
+    result.innerHTML = '<div class="smsg err" style="display:block">DB가 연결되지 않았습니다.</div>';
+    return;
+  }
+
+  showLoading('검색 중...');
+  try {
+    // 전체 목록을 불러와서 클라이언트에서 필터링 (가장 확실한 방법)
+    const { data: all, error } = await sb.from('submissions').select('*');
+    if (error) throw error;
+
+    let found = null;
+
+    if (id1) {
+      // 학번으로 검색 — 팀원1 또는 팀원2
+      found = all.find(r => r.student_id1 === id1 || r.student_id2 === id1) || null;
+    }
+
+    if (!found && name) {
+      // 이름으로 검색 — 팀원1 또는 팀원2 (부분일치)
+      found = all.find(r =>
+        (r.name1 && r.name1 === name) ||
+        (r.name2 && r.name2 === name)
+      ) || null;
+    }
+
+    if (!found) {
+      result.innerHTML = '<div class="smsg err" style="display:block">해당 정보로 제출된 활동지가 없습니다.<br><span style="font-size:11px;color:#991B1B">팀원 1 또는 팀원 2의 이름/학번으로 검색해 보세요.</span></div>';
+      hideLoading();
+      return;
+    }
+
+    await loadQs();
+    const ans = found.answers || {};
+    const submittedAt = found.submitted_at
+      ? new Date(found.submitted_at).toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false })
+      : '';
+
+    result.innerHTML = `
+      <div class="view-result-card">
+        <div class="view-result-header">
+          <div class="view-avatar">${(found.name1||'?').charAt(0)}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;font-weight:700">${maskName(found.name1)} &amp; ${maskName(found.name2)}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px">
+              학번 ${found.student_id1} · ${found.student_id2}
+              ${submittedAt ? `&nbsp;|&nbsp; ${submittedAt} 제출` : ''}
+            </div>
+          </div>
+          <button class="abtn" onclick="wsOpenEdit('${found.student_id1}')"
+            style="flex-shrink:0;border-color:var(--accent);color:var(--accent);font-weight:600">
+            <i class="ti ti-edit"></i> 수정하기
+          </button>
+        </div>
+        <div class="sec-label" style="margin-top:0">공동 활동지</div>
+        ${questions.map((q,i) => `
+          <div class="ans-block">
+            <div class="ans-q">Q${i+1}. ${typeof q === 'object' ? q.text : q}</div>
+            <div class="ans-a">${renderAnsValue(ans[i], i)}</div>
+          </div>`).join('')}
+        <div class="sec-label">개인 소감문</div>
+        <div class="mem-block">
+          <div class="mem-hdr"><span class="mtag m1">${maskName(found.name1)} 소감문</span></div>
+          <div style="font-size:13px;line-height:1.65">${found.reflection1 || '<span style="color:var(--text3)">미작성</span>'}</div>
+        </div>
+        <div class="mem-block">
+          <div class="mem-hdr"><span class="mtag m2">${maskName(found.name2)} 소감문</span></div>
+          <div style="font-size:13px;line-height:1.65">${found.reflection2 || '<span style="color:var(--text3)">미작성</span>'}</div>
+        </div>
+      </div>`;
+  } catch(e) {
+    result.innerHTML = `<div class="smsg err" style="display:block">검색 실패: ${e.message}</div>`;
+  }
+  hideLoading();
+}
+
+/* ── 수정 패널 열기 ── */
+async function wsOpenEdit(id1) {
+  showLoading('활동지 불러오는 중...');
+  try {
+    const { data, error } = await sb.from('submissions').select('*').eq('student_id1', id1).maybeSingle();
+    if (error) throw error;
+    if (!data) { alert('활동지를 찾을 수 없습니다.'); hideLoading(); return; }
+    wsEditId = data.id;
+    await loadQs();
+    const ans = data.answers || {};
+    // 팀 정보 채우기
+    wsEditNames = { n1: data.name1 || '', n2: data.name2 || '' };
+    ['ws-en1', 'ws-en2'].forEach((elId, k) => {
+      const el = document.getElementById(elId);
+      el.value = maskName(k === 0 ? wsEditNames.n1 : wsEditNames.n2);
+      el.readOnly = true;
+      el.style.background = 'var(--bg)';
+      el.style.color = 'var(--text3)';
+    });
+    document.getElementById('ws-eid1').value = data.student_id1 || '';
+    document.getElementById('ws-eid2').value = data.student_id2 || '';
+    // 질문 렌더링 (수정용) — 사진 타입 지원
+    const editQArea = document.getElementById('ws-edit-questions');
+    editQArea.innerHTML = '';
+    questions.forEach(function(q, i) {
+      const text = typeof q === 'object' ? q.text : q;
+      const type = typeof q === 'object' ? (q.type || 'text') : 'text';
+      const curVal = ans[i] || '';
+      const card = document.createElement('div');
+      card.className = 'card';
+      if (type === 'photo') {
+        const isUrl = typeof curVal === 'string' && curVal.startsWith('http');
+        card.innerHTML = '<div class="qt"><span class="qn">' + (i+1) + '</span><span>' + text + '</span></div>'
+          + '<div style="margin-top:6px">'
+          + (isUrl ? '<div style="margin-bottom:8px"><a href="' + curVal + '" target="_blank"><img src="' + curVal + '" style="max-width:100%;max-height:180px;border-radius:var(--rad);border:1px solid var(--border);object-fit:contain;display:block"></a>'
+            + '<div style="font-size:11px;color:var(--text3);margin-top:3px"><i class="ti ti-photo" style="font-size:11px"></i> 현재 사진</div></div>' : '')
+          + '<input type="file" accept="image/*" id="ws-eq' + i + '" capture="environment" style="display:none" onchange="previewEditPhoto(' + i + ',this)">'
+          + '<div id="ws-eq' + i + '-preview" style="margin-bottom:8px"></div>'
+          + '<label for="ws-eq' + i + '" class="abtn" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:12px">'
+          + '<i class="ti ti-camera"></i> ' + (isUrl ? '사진 교체하기' : '사진 첨부하기') + '</label>'
+          + '</div>';
+      } else {
+        card.innerHTML = '<div class="qt"><span class="qn">' + (i+1) + '</span><span>' + text + '</span></div>'
+          + '<textarea class="fta" id="ws-eq' + i + '" placeholder="여기에 답변을 작성하세요...">' + curVal + '</textarea>';
+      }
+      editQArea.appendChild(card);
+    });
+    // 소감문
+    document.getElementById('ws-eref1').value = data.reflection1 || '';
+    document.getElementById('ws-eref2').value = data.reflection2 || '';
+    updateEditLabels();
+    document.getElementById('ws-edit-status').style.display = 'none';
+    // 수정 패널 표시
+    document.getElementById('ws-panel-view').style.display = 'none';
+    document.getElementById('ws-panel-edit').style.display = '';
+  } catch(e) { alert('불러오기 실패: ' + e.message); }
+  hideLoading();
+}
+
+/* ── 수정 저장 ── */
+async function saveEditWorksheet() {
+  const n1  = wsEditNames.n1;
+  const id1 = document.getElementById('ws-eid1').value.trim();
+  const n2  = wsEditNames.n2;
+  const id2 = document.getElementById('ws-eid2').value.trim();
+  const st  = document.getElementById('ws-edit-status');
+  if (!n1||!n2) { st.className='smsg err'; st.textContent='이름을 입력해 주세요.'; return; }
+  if (!sb) { st.className='smsg err'; st.textContent='DB가 연결되지 않았습니다.'; return; }
+  showLoading('수정 저장 중...');
+  const answers = {};
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i];
+    const type = typeof q === 'object' ? (q.type || 'text') : 'text';
+    const el = document.getElementById('ws-eq' + i);
+    if (!el) continue;
+    if (type === 'photo') {
+      if (el.files && el.files[0]) {
+        // 새 사진 업로드
+        const url = await uploadPhotoAnswer(i, id1);
+        answers[i] = url || '';
+      } else {
+        // 기존 사진 URL 유지 — Supabase에서 다시 불러오기
+        try {
+          const { data: curData } = await sb.from('submissions').select('answers').eq('id', wsEditId).maybeSingle();
+          answers[i] = (curData && curData.answers && curData.answers[i]) || '';
+        } catch(e) { answers[i] = ''; }
+      }
+    } else {
+      answers[i] = el.value.trim();
+    }
+  }
+  const row = {
+    name1: n1, student_id1: id1, class1: '', name2: n2, student_id2: id2,
+    answers,
+    reflection1: document.getElementById('ws-eref1').value.trim(),
+    reflection2: document.getElementById('ws-eref2').value.trim(),
+    updated_at: new Date().toISOString()
+  };
+  try {
+    const { error } = await sb.from('submissions').update(row).eq('id', wsEditId);
+    if (error) throw error;
+    st.className = 'smsg ok'; st.textContent = '✓ 활동지가 수정되었습니다!';
+  } catch(e) { st.className = 'smsg err'; st.textContent = '수정 실패: ' + e.message; }
+  hideLoading();
+}
+
+function updateEditLabels() {
+  const n1 = document.getElementById('ws-en1').value.trim();
+  const n2 = document.getElementById('ws-en2').value.trim();
+  const l1 = document.getElementById('edit-lbl-1');
+  const l2 = document.getElementById('edit-lbl-2');
+  if (l1) l1.textContent = (n1||'팀원 1') + ' 소감문';
+  if (l2) l2.textContent = (n2||'팀원 2') + ' 소감문';
+}
+
+async function refreshWorksheet() {}
+
+async function refreshTeacher(){showLoading('새로고침 중...');await renderTeacher();hideLoading();}
+async function saveTeacher(){
+  if(!sb){alert('Supabase가 연결되지 않았습니다.');return;}
+  showLoading('저장 중...');
+  for(const s of submissions){
+    if(!s._id)continue;
+    const el1=document.getElementById('sk-'+s.id1+'-1');
+    const el2=document.getElementById('sk-'+s.id1+'-2');
+    const ob1=document.getElementById('obs-'+s.id1+'-1');
+    const ob2=document.getElementById('obs-'+s.id1+'-2');
+    const upd={updated_at:new Date().toISOString()};
+    if(el1)upd.seteuk1=el1.value;
+    if(el2)upd.seteuk2=el2.value;
+    if(ob1)upd.obs1=ob1.value;
+    if(ob2)upd.obs2=ob2.value;
+    try{await sb.from('submissions').update(upd).eq('id',s._id);}catch(e){}
+  }
+  hideLoading();
+}
+function fakeDownload(btn){btn.innerHTML='<i class="ti ti-check"></i> 완료';btn.style.color='var(--green)';setTimeout(()=>{btn.innerHTML='<i class="ti ti-download"></i> 다운';btn.style.color='';},2000);}
+function dlExcel(){
+  if(!submissions.length){alert('제출된 활동지가 없습니다.');return;}
+  const hdr=['팀원1','학번1','팀원2','학번2','반',...questions.map((q,i)=>'Q'+(i+1)),'팀원1 소감문','팀원2 소감문'];
+  const rows=submissions.map(s=>{
+    const ans=s.answers||{};
+    return[s.n1,s.id1,s.n2,s.id2,s.c1,...questions.map((_,i)=>ans[i]||''),s.ref1||'',s.ref2||''];
+  });
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet([hdr,...rows]);
+  ws['!cols']=[{wch:10},{wch:10},{wch:10},{wch:10},{wch:6},...questions.map(()=>({wch:26})),{wch:30},{wch:30}];
+  XLSX.utils.book_append_sheet(wb,ws,'활동지');
+  const fname='활동지_'+new Date().toLocaleDateString('ko-KR').split('.').join('-').replace(/\s/g,'')+'.xlsx';
+  XLSX.writeFile(wb,fname);
+}
+
+async function savePrompt() {
+  const val = (document.getElementById('seteuk-prompt-input')||{}).value||'';
+  const msg = document.getElementById('prompt-save-msg');
+  localStorage.setItem('seteuk-prompt', val);  // 로컬 백업
+  if (sb) {
+    try {
+      await sb.from('settings').upsert({key:'seteuk-prompt', value:val}, {onConflict:'key'});
+      msg.className='smsg ok'; msg.textContent='✓ 프롬프트가 저장됐습니다! (다른 컴퓨터에서도 유지됩니다)';
+    } catch(e) {
+      msg.className='smsg ok'; msg.textContent='✓ 로컬에 저장됐습니다. (DB 연결 시 자동 동기화)';
+    }
+  } else {
+    msg.className='smsg ok'; msg.textContent='✓ 로컬에 저장됐습니다.';
+  }
+  setTimeout(()=>{ if(msg) msg.style.display='none'; }, 3000);
+}
+
+function dlSeteukExcel() {
+  if(!submissions.length){alert('제출된 활동지가 없습니다.');return;}
+  const hdr=['학번1','팀원1','학번2','팀원2',...questions.map((q,i)=>'Q'+(i+1)+(typeof q==='object'&&q.type==='photo'?'(사진)':'')),'팀원1 소감문','팀원1 관찰내용','팀원1 세특','팀원2 소감문','팀원2 관찰내용','팀원2 세특'];
+  const rows=submissions.map(s=>{
+    const ans=s.answers||{};
+    const obs1El=document.getElementById('obs-'+s.id1+'-1');
+    const obs2El=document.getElementById('obs-'+s.id1+'-2');
+    const sk1El=document.getElementById('sk-'+s.id1+'-1');
+    const sk2El=document.getElementById('sk-'+s.id1+'-2');
+    const obs1=obs1El?obs1El.value:(s.obs1||'');
+    const obs2=obs2El?obs2El.value:(s.obs2||'');
+    const sk1=sk1El?sk1El.value:(s.seteuk1||'');
+    const sk2=sk2El?sk2El.value:(s.seteuk2||'');
+    return[s.id1,s.n1,s.id2,s.n2,...questions.map((_,i)=>ans[i]||''),s.ref1||'',obs1,sk1,s.ref2||'',obs2,sk2];
+  });
+  const wb=XLSX.utils.book_new();
+  const ws2=XLSX.utils.aoa_to_sheet([hdr,...rows]);
+  ws2['!cols']=[{wch:8},{wch:10},{wch:8},{wch:10},...questions.map(()=>({wch:24})),{wch:28},{wch:24},{wch:55},{wch:28},{wch:24},{wch:55}];
+  XLSX.utils.book_append_sheet(wb,ws2,'세특');
+  const fname='세특_'+new Date().toLocaleDateString('ko-KR').split('.').join('-').replace(/\s/g,'')+'.xlsx';
+  XLSX.writeFile(wb,fname);
+}
+
+/* 초기화 */
+(()=>{
+  // localhost로 접속하면 홈 유지 (교사용)
+  // 외부 IP로 접속하면 viewer 화면으로 자동 이동 (학생용)
+  const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  if (!isLocalhost && location.protocol === 'http:' && location.port === '3000') {
+    setTimeout(() => go('viewer'), 300);
+  } else if (location.hash === '#viewer') {
+    setTimeout(() => go('viewer'), 300);
+  }
+  const ok = initSupabase();
+  const r = lsGet('questions'); if(r) questions = r;
+  setTimeout(()=>{
+    loadSavedIP();
+    loadSbInputs();
+    // Supabase 연결 후 명단 불러오기
+    if (ok && sb) {
+      loadRosterFromDb();
+    }
+  }, 300); })();
+
+/* ══════════════════════════════════════════
+   파일 다운로드 함수
+══════════════════════════════════════════ */
+function dlFile(filename, b64) {
+  const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  const blob = new Blob([bytes]);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function dlAll() {
+  const files = [
+    { name: '시작.bat',      id: 'BAT_B64'  },
+    { name: 'server.js',    id: 'SERVER_B64'},
+    { name: 'package.json', id: 'PKG_B64'  },
+  ];
+  // 각 버튼의 onclick에서 b64 값 추출해서 순차 다운로드
+  const btns = document.querySelectorAll('#tab-install button[onclick^="dlFile"]');
+  let i = 0;
+  function next() {
+    if (i >= btns.length) return;
+    btns[i].click();
+    i++;
+    setTimeout(next, 600);
+  }
+  next();
+}
+
+
+
+/* ── Supabase 설정 저장 ── */
+function saveSbConfig() {
+  const url  = document.getElementById('sb-url-input').value.trim();
+  const anon = document.getElementById('sb-anon-input').value.trim();
+  const msg  = document.getElementById('sb-config-msg');
+  if (!url || !anon) { msg.className='smsg err'; msg.textContent='URL과 키를 모두 입력해 주세요.'; return; }
+  localStorage.setItem('sb-url', url);
+  localStorage.setItem('sb-anon', anon);
+  try { sb = window.supabase.createClient(url, anon); } catch(e) { msg.className='smsg err'; msg.textContent='초기화 실패: '+e.message; return; }
+  msg.className='smsg ok'; msg.textContent='✓ 저장됐습니다. 연결 테스트를 눌러 확인해 보세요.';
+  updateSbBadge();
+}
+async function testSbConnection() {
+  const msg = document.getElementById('sb-config-msg');
+  if (!sb) { msg.className='smsg err'; msg.textContent='먼저 연결하기를 눌러주세요.'; return; }
+  msg.className='smsg info'; msg.textContent='연결 테스트 중...'; msg.style.display='block';
+  try {
+    const { error } = await sb.from('submissions').select('id').limit(1);
+    if (error) throw error;
+    msg.className='smsg ok'; msg.textContent='✓ Supabase 연결 성공! 이제 활동지 데이터가 자동으로 저장됩니다.';
+    updateSbBadge(true);
+  } catch(e) {
+    msg.className='smsg err'; msg.textContent='연결 실패: ' + (e.message || e);
+    updateSbBadge(false);
+  }
+}
+function updateSbBadge(ok) {
+  const badge = document.getElementById('sb-status-badge');
+  if (!badge) return;
+  const url = localStorage.getItem('sb-url');
+  if (ok === true) {
+    badge.style.background='#EAF3DE'; badge.style.color='#27500A'; badge.textContent='✓ 연결됨';
+  } else if (ok === false) {
+    badge.style.background='#FCEBEB'; badge.style.color='#791F1F'; badge.textContent='연결 실패';
+  } else if (url) {
+    badge.style.background='#FAEEDA'; badge.style.color='#633806'; badge.textContent='설정됨 (미확인)';
+  }
+}
+function loadSbInputs() {
+  const urlEl  = document.getElementById('sb-url-input');
+  const anonEl = document.getElementById('sb-anon-input');
+  if (urlEl)  urlEl.value  = localStorage.getItem('sb-url')  || '';
+  if (anonEl) anonEl.value = localStorage.getItem('sb-anon') || '';
+  updateSbBadge();
+}
+
+/* ── 서버 IP 저장 ── */
+function saveServerIP() {
+  const ip = document.getElementById('server-ip-input').value.trim();
+  if (!ip) return;
+  localStorage.setItem('server-ip', ip);
+  WS_URL = 'ws://' + ip + ':3000';
+  const msg = document.getElementById('ip-saved-msg');
+  if (msg) { msg.style.display = 'inline-flex'; setTimeout(() => msg.style.display = 'none', 2000); }
+}
+function saveServerIPViewer() {
+  const ip = document.getElementById('viewer-ip-input').value.trim();
+  if (!ip) return;
+  localStorage.setItem('server-ip', ip);
+  WS_URL = `ws://${ip}:3000`;
+  connectViewer();
+}
+function loadSavedIP() {
+  const ip = localStorage.getItem('server-ip') || '';
+  const inp1 = document.getElementById('server-ip-input');
+  const inp2 = document.getElementById('viewer-ip-input');
+  if (inp1) inp1.value = ip;
+  if (inp2) inp2.value = ip;
+}
+
+/* ── 수업 자료 관련 ── */
+async function loadMaterials() {
+  const list = document.getElementById('mat-list');
+  if (!list) return;
+  if (!sb) {
+    list.innerHTML = '<div class="smsg err" style="display:block">DB가 연결되지 않았습니다.</div>';
+    return;
+  }
+  list.innerHTML = '<div class="empty-st"><div class="empty-icon">⏳</div><p>불러오는 중...</p></div>';
+  try {
+    const { data, error } = await sb.from('materials').select('*').order('uploaded_at', { ascending: false });
+    if (error) throw error;
+    if (!data || !data.length) {
+      list.innerHTML = '<div class="empty-st"><div class="empty-icon">📂</div><p>등록된 수업 자료가 없습니다.</p></div>';
+      return;
+    }
+    list.innerHTML = data.map(m => {
+      const ext = m.name.split('.').pop().toLowerCase();
+      const iconMap = { pdf:'ti-file-type-pdf', ppt:'ti-presentation', pptx:'ti-presentation', hwp:'ti-file-text', docx:'ti-file-text', xlsx:'ti-file-spreadsheet', zip:'ti-file-zip' };
+      const icon = iconMap[ext] || 'ti-file';
+      const colorMap = { pdf:'#CC2233', ppt:'#C9511F', pptx:'#C9511F', hwp:'#0066FF', docx:'#0066FF', xlsx:'#16A34A', zip:'#854F0B' };
+      const color = colorMap[ext] || '#5C5C7A';
+      const size = m.file_size ? (m.file_size > 1024*1024 ? (m.file_size/1024/1024).toFixed(1)+'MB' : Math.round(m.file_size/1024)+'KB') : '';
+      const date = m.uploaded_at ? new Date(m.uploaded_at).toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}) : '';
+      return '<div class="mat-item">'
+        + '<div class="mat-icon" style="background:'+color+'22;color:'+color+'"><i class="ti '+icon+'"></i></div>'
+        + '<div style="flex:1;min-width:0"><div class="mat-name">'+m.name+'</div>'
+        + '<div class="mat-meta">'+(size?size+' · ':'')+date+'</div></div>'
+        + '<a href="'+m.file_url+'" target="_blank" download class="dl-btn">'
+        + '<i class="ti ti-download"></i> 다운</a></div>';
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="smsg err" style="display:block">불러오기 실패: ' + e.message + '</div>';
+  }
+}
+
+async function loadMaterialsMgr() {
+  const list = document.getElementById('mat-mgr-list');
+  if (!list || !sb) return;
+  list.innerHTML = '<div class="empty-st" style="padding:16px"><p>불러오는 중...</p></div>';
+  try {
+    const { data, error } = await sb.from('materials').select('*').order('uploaded_at', { ascending: false });
+    if (error) throw error;
+    if (!data || !data.length) {
+      list.innerHTML = '<div class="empty-st" style="padding:16px"><div class="empty-icon">📂</div><p>업로드된 자료가 없습니다</p></div>';
+      return;
+    }
+    list.innerHTML = '';
+    data.forEach(m => {
+      const size = m.file_size ? (m.file_size > 1024*1024 ? (m.file_size/1024/1024).toFixed(1)+'MB' : Math.round(m.file_size/1024)+'KB') : '';
+      const date = m.uploaded_at ? new Date(m.uploaded_at).toLocaleDateString('ko-KR') : '';
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)';
+      row.innerHTML = '<div style="flex:1;min-width:0">'
+        + '<div style="font-size:13px;font-weight:500;color:var(--text)">' + m.name + '</div>'
+        + '<div style="font-size:11px;color:var(--text3);margin-top:2px">' + (size ? size+' · ' : '') + date + '</div>'
+        + '</div>'
+        + '<a href="' + m.file_url + '" target="_blank" class="abtn" style="font-size:11px;flex-shrink:0"><i class="ti ti-eye"></i> 보기</a>';
+      const delBtn = document.createElement('button');
+      delBtn.className = 'abtn';
+      delBtn.style.cssText = 'font-size:11px;color:var(--sport);border-color:var(--sport);flex-shrink:0';
+      delBtn.innerHTML = '<i class="ti ti-trash"></i> 삭제';
+      delBtn.addEventListener('click', () => deleteMaterial(m.id, m.name));
+      row.appendChild(delBtn);
+      list.appendChild(row);
+    });
+  } catch(e) {
+    list.innerHTML = '<div class="smsg err" style="display:block">오류: ' + e.message + '</div>';
+  }
+}
+
+
+async function uploadMaterial() {
+  const nameEl = document.getElementById('mat-name-input');
+  const fileEl = document.getElementById('mat-file-input');
+  const msg = document.getElementById('mat-upload-msg');
+  const name = nameEl.value.trim();
+  const file = fileEl.files[0];
+  if (!name) { msg.className='smsg err'; msg.textContent='자료 이름을 입력해 주세요.'; return; }
+  if (!file) { msg.className='smsg err'; msg.textContent='파일을 선택해 주세요.'; return; }
+  if (!sb) { msg.className='smsg err'; msg.textContent='DB가 연결되지 않았습니다.'; return; }
+  msg.className='smsg info'; msg.textContent='업로드 중...';
+  try {
+    const fileName = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const { data: upData, error: upErr } = await sb.storage.from('materials').upload(fileName, file);
+    if (upErr) throw upErr;
+    const { data: urlData } = sb.storage.from('materials').getPublicUrl(fileName);
+    const { error: dbErr } = await sb.from('materials').insert({
+      name: name,
+      file_url: urlData.publicUrl,
+      file_size: file.size
+    });
+    if (dbErr) throw dbErr;
+    msg.className='smsg ok'; msg.textContent='✓ 업로드 완료!';
+    nameEl.value=''; fileEl.value='';
+    loadMaterialsMgr();
+  } catch(e) {
+    msg.className='smsg err'; msg.textContent='업로드 실패: ' + e.message;
+  }
+}
+
+async function deleteMaterial(id, name) {
+  if (!confirm('[' + name + '] 자료를 삭제할까요?')) return;
+  if (!sb) return;
+  try {
+    const { error } = await sb.from('materials').delete().eq('id', id);
+    if (error) throw error;
+    loadMaterialsMgr();
+    loadMaterials();
+  } catch(e) { alert('삭제 실패: ' + e.message); }
+}
+
+/* ── 활동지 삭제 ── */
+async function deleteSubmission(id1, n1, n2) {
+  if (!confirm('[' + (n1||id1) + ' & ' + (n2||'') + '] 팀의 활동지를 삭제할까요?\n이 작업은 되돌릴 수 없습니다.')) return;
+  if (!sb) { alert('DB가 연결되지 않았습니다.'); return; }
+  try {
+    const s = submissions.find(x => x.id1 === id1);
+    if (!s || !s._id) { alert('데이터를 찾을 수 없습니다.'); return; }
+    const { error } = await sb.from('submissions').delete().eq('id', s._id);
+    if (error) throw error;
+    await renderTeacher();
+  } catch(e) { alert('삭제 실패: ' + e.message); }
+}
+
+/* ── 전체 세특 생성 ── */
+async function genAllSeteuk() {
+  if (!submissions.length) { alert('제출된 활동지가 없습니다.'); return; }
+  const btn = document.getElementById('gen-all-btn');
+  const statusEl = document.getElementById('gen-all-status');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .7s linear infinite"></i> 생성 중...';
+  statusEl.className = 'smsg info';
+  statusEl.textContent = '전체 세특 생성을 시작합니다...';
+
+  let done = 0;
+  const total = submissions.length * 2;
+
+  for (const s of submissions) {
+    for (const m of [1, 2]) {
+      const genBtn = document.createElement('button'); // 더미 버튼
+      statusEl.textContent = (done+1) + '/' + total + ' 생성 중 — ' + (m===1?s.n1:s.n2) + ' (' + (m===1?s.id1:s.id2) + ')';
+      await genSeteuk(s.id1, m, genBtn);
+      done++;
+      await new Promise(r => setTimeout(r, 500)); // API 과부하 방지
+    }
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ti ti-sparkles"></i> 모두 세특 완성';
+  statusEl.className = 'smsg ok';
+  statusEl.textContent = '✓ 전체 ' + total + '명 세특 생성 완료!';
+  setTimeout(() => statusEl.style.display = 'none', 4000);
+}
+
+/* ── 교사 관찰 내용 저장 ── */
+async function saveObs(id1, m, msgEl) {
+  const obsEl = document.getElementById('obs-' + id1 + '-' + m);
+  if (!obsEl) return;
+  const obs = obsEl.value.trim();
+  const s = submissions.find(x => x.id1 === id1);
+  if (!s || !s._id) { if(msgEl){msgEl.textContent='저장 실패';msgEl.style.display='inline';} return; }
+
+  if (sb) {
+    try {
+      const upd = {updated_at: new Date().toISOString()};
+      upd['obs'+m] = obs;
+      const {error} = await sb.from('submissions').update(upd).eq('id', s._id);
+      if (error) throw error;
+      if (m===1) s.obs1=obs; else s.obs2=obs;
+      if (msgEl) {
+        msgEl.textContent = '✓ 저장됨';
+        msgEl.style.display = 'inline';
+        setTimeout(()=>{ msgEl.style.display='none'; }, 2000);
+      }
+    } catch(e) {
+      if (msgEl) { msgEl.textContent='저장 실패: '+e.message; msgEl.style.display='inline'; }
+    }
+  }
+}
+
+
+/* ══════════════════════════════════════════
+   API 키 모달 관련 함수
+══════════════════════════════════════════ */
+let apiKeys = { gemini:'', gpt:'', claude:'' };
+async function loadApiKeys() {
+  if (!sb) return;
+  try {
+    // API 키 로드
+    for (const ai of ['gemini','gpt','claude']) {
+      const {data} = await sb.from('settings').select('value').eq('key','api-key-'+ai).maybeSingle();
+      if (data && data.value) apiKeys[ai] = data.value;
+    }
+    updateAiNote();
+
+    // 프롬프트 로드 (DB 우선)
+    const {data: pData} = await sb.from('settings').select('value').eq('key','seteuk-prompt').maybeSingle();
+    if (pData && pData.value) {
+      localStorage.setItem('seteuk-prompt', pData.value);
+      const inp = document.getElementById('seteuk-prompt-input');
+      if (inp) inp.value = pData.value;  // 항상 DB 값으로 덮어씌우기
+    }
+  } catch(e) { console.error('설정 로드 실패:', e); }
+}
+
+function openApiKeyModal() {
+  const modal = document.getElementById('api-key-modal');
+  if (!modal) { alert('모달을 찾을 수 없습니다.'); return; }
+  document.getElementById('key-gemini').value = apiKeys.gemini || '';
+  document.getElementById('key-gpt').value    = apiKeys.gpt    || '';
+  document.getElementById('key-claude').value = apiKeys.claude || '';
+  document.getElementById('api-key-msg').style.display = 'none';
+  modal.style.display = 'flex';
+}
+
+function closeApiKeyModal() {
+  const modal = document.getElementById('api-key-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function toggleKeyVis(id) {
+  const el = document.getElementById(id);
+  if (el) el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+async function saveApiKeys() {
+  const msg = document.getElementById('api-key-msg');
+  msg.className = 'smsg info'; msg.textContent = '저장 중...'; msg.style.display = 'block';
+  const vals = {
+    gemini: (document.getElementById('key-gemini')||{}).value||'',
+    gpt:    (document.getElementById('key-gpt')||{}).value||'',
+    claude: (document.getElementById('key-claude')||{}).value||''
+  };
+  if (!sb) { msg.className='smsg err'; msg.textContent='DB가 연결되지 않았습니다.'; return; }
+  try {
+    for (const [ai, val] of Object.entries(vals)) {
+      if (val.trim()) {
+        await sb.from('settings').upsert({key:'api-key-'+ai, value:val.trim()}, {onConflict:'key'});
+        apiKeys[ai] = val.trim();
+      }
+    }
+    msg.className='smsg ok'; msg.textContent='✓ API 키가 저장됐습니다!';
+    updateAiNote();
+    setTimeout(closeApiKeyModal, 1500);
+  } catch(e) {
+    msg.className='smsg err'; msg.textContent='저장 실패: '+e.message;
+  }
+}
+
+function updateAiNote() {
+  const note = document.getElementById('ai-note');
+  if (!note) return;
+  const labels = { gemini:'Gemini', gpt:'ChatGPT', claude:'Claude' };
+  const connected = Object.entries(apiKeys).filter(([k,v])=>v).map(([k])=>labels[k]);
+  if (connected.length) {
+    note.innerHTML = '<i class="ti ti-circle-check" style="font-size:13px;color:var(--accent);margin-right:4px"></i>'
+      + '<span style="color:var(--accent)">'+connected.join(', ')+' API 키 등록됨</span>';
+  } else {
+    note.innerHTML = '<span style="color:var(--text3)">API 키 설정 버튼을 눌러 ChatGPT(GPT-4o mini) API 키를 등록해 주세요.</span>';
+  }
+}
+
+// 모달 바깥 클릭 시 닫기
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('api-key-modal');
+  if (modal) modal.addEventListener('click', function(e){ if(e.target===modal) closeApiKeyModal(); });
+});
+
+
+/* ══ 전역 노출 함수 (HTML onclick에서 호출) ══ */
+window.savePrompt = async function() {
+  const inp = document.getElementById('seteuk-prompt-input');
+  const val = inp ? inp.value.trim() : '';
+  const msg = document.getElementById('prompt-save-msg');
+  localStorage.setItem('seteuk-prompt', val);
+  if (sb) {
+    try {
+      await sb.from('settings').upsert({key:'seteuk-prompt', value:val}, {onConflict:'key'});
+      if (msg) { msg.className='smsg ok'; msg.textContent='✓ 저장됐습니다! 다른 컴퓨터에서도 유지됩니다.'; msg.style.display='block'; }
+    } catch(e) {
+      if (msg) { msg.className='smsg ok'; msg.textContent='✓ 로컬에 저장됐습니다.'; msg.style.display='block'; }
+    }
+  } else {
+    if (msg) { msg.className='smsg ok'; msg.textContent='✓ 저장됐습니다.'; msg.style.display='block'; }
+  }
+  if (msg) setTimeout(()=>{ msg.style.display='none'; }, 3000);
+};
+
+window.openApiKeyModal = function() {
+  const modal = document.getElementById('api-key-modal');
+  if (!modal) return;
+  document.getElementById('key-gemini').value = apiKeys.gemini || '';
+  document.getElementById('key-gpt').value    = apiKeys.gpt    || '';
+  document.getElementById('key-claude').value = apiKeys.claude || '';
+  const m = document.getElementById('api-key-msg');
+  if (m) m.style.display = 'none';
+  modal.style.display = 'flex';
+};
+
+window.saveApiKeys = async function() {
+  const msg = document.getElementById('api-key-msg');
+  if (msg) { msg.className='smsg info'; msg.textContent='저장 중...'; msg.style.display='block'; }
+  const vals = {
+    gemini: (document.getElementById('key-gemini')||{}).value||'',
+    gpt:    (document.getElementById('key-gpt')||{}).value||'',
+    claude: (document.getElementById('key-claude')||{}).value||''
+  };
+  if (!sb) {
+    if (msg) { msg.className='smsg err'; msg.textContent='DB가 연결되지 않았습니다.'; }
+    return;
+  }
+  try {
+    for (const [ai, val] of Object.entries(vals)) {
+      if (val.trim()) {
+        await sb.from('settings').upsert({key:'api-key-'+ai, value:val.trim()}, {onConflict:'key'});
+        apiKeys[ai] = val.trim();
+      }
+    }
+    if (msg) { msg.className='smsg ok'; msg.textContent='✓ API 키가 저장됐습니다!'; }
+    updateAiNote();
+    setTimeout(closeApiKeyModal, 1500);
+  } catch(e) {
+    if (msg) { msg.className='smsg err'; msg.textContent='저장 실패: '+e.message; }
+  }
+};
+
+window.closeApiKeyModal = function() {
+  const modal = document.getElementById('api-key-modal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.toggleKeyVis = function(id) {
+  const el = document.getElementById(id);
+  if (el) el.type = el.type === 'password' ? 'text' : 'password';
+};
+
+
+window.saveObs = async function(id1, m, msgEl) {
+  const obsEl = document.getElementById('obs-'+id1+'-'+m);
+  if (!obsEl) return;
+  const obs = obsEl.value.trim();
+  const s = submissions.find(x => x.id1 === id1);
+  if (!s || !s._id) {
+    if (msgEl) { msgEl.textContent='저장 실패 (데이터 없음)'; msgEl.style.display='inline'; }
+    return;
+  }
+  if (m===1) s.obs1=obs; else s.obs2=obs;
+  if (sb) {
+    try {
+      const upd = {updated_at: new Date().toISOString()};
+      upd['obs'+m] = obs;
+      const {error} = await sb.from('submissions').update(upd).eq('id', s._id);
+      if (error) throw error;
+      if (msgEl) {
+        msgEl.textContent = '✓ 저장됨';
+        msgEl.style.display = 'inline';
+        setTimeout(()=>{ msgEl.style.display='none'; }, 2000);
+      }
+    } catch(e) {
+      if (msgEl) { msgEl.textContent='저장 실패: '+e.message; msgEl.style.display='inline'; }
+    }
+  } else {
+    if (msgEl) { msgEl.textContent='DB 미연결'; msgEl.style.display='inline'; }
+  }
+};
+
+
+/* ── 교사 화면 보기 ── */
+function goViewer() {
+  const ip = localStorage.getItem('server-ip');
+  if (ip && ip.trim()) {
+    const url = 'http://' + ip.trim() + ':3000';
+    // 팝업 차단 우회: 현재 창에서 이동
+    location.href = url;
+  } else {
+    const ok = confirm('선생님 컴퓨터 IP가 설정되어 있지 않습니다.\n\n교사용 관리 → 화면 방송 탭에서 IP를 먼저 저장해주세요.\n\n지금 바로 연결 화면으로 이동할까요?');
+    if (ok) go('viewer');
+  }
+}
+
+
+/* ── 사진 미리보기 ── */
+function previewPhoto(idx, input) {
+  const preview = document.getElementById('ws-q'+idx+'-preview');
+  if (!preview || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    preview.innerHTML = '<img src="'+e.target.result+'" style="max-width:100%;max-height:200px;border-radius:var(--rad);border:1px solid var(--border);object-fit:contain">'
+      + '<div style="font-size:11px;color:var(--accent);margin-top:4px"><i class="ti ti-check" style="font-size:11px"></i> 사진이 선택됐습니다</div>';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+/* ── 사진 업로드 to Supabase Storage ── */
+async function uploadPhotoAnswer(idx, teamId) {
+  const input = document.getElementById('ws-q'+idx);
+  if (!input || !input.files || !input.files[0]) return null;
+  const file = input.files[0];
+  const ext = file.name.split('.').pop() || 'jpg';
+  const path = 'answers/' + teamId + '_q' + idx + '_' + Date.now() + '.' + ext;
+  try {
+    const { error } = await sb.storage.from('materials').upload(path, file, { upsert: true });
+    if (error) throw error;
+    const { data } = sb.storage.from('materials').getPublicUrl(path);
+    return data.publicUrl;
+  } catch(e) {
+    console.error('사진 업로드 실패:', e);
+    return null;
+  }
+}
+
+
+/* ── 답변 렌더링 헬퍼 (사진 URL 판별) ── */
+function renderAnsValue(val, qIdx) {
+  if (!val) return '<span style="color:var(--text3)">미작성</span>';
+  // URL이면 무조건 사진으로 표시
+  if (typeof val === 'string' && val.startsWith('http')) {
+    return '<a href="'+val+'" target="_blank">'
+      + '<img src="'+val+'" style="max-width:100%;max-height:200px;border-radius:var(--rad);border:1px solid var(--border);object-fit:contain;display:block;margin-top:4px">'
+      + '</a><div style="font-size:10px;color:var(--accent);margin-top:4px"><i class="ti ti-photo" style="font-size:11px"></i> 사진 답변 — 클릭하면 크게 보기</div>';
+  }
+  const q = questions[qIdx];
+  const type = typeof q === 'object' ? (q.type||'text') : 'text';
+  if (type === 'photo' && val.startsWith('http')) {
+    return '<a href="'+val+'" target="_blank">'
+      + '<img src="'+val+'" style="max-width:100%;max-height:160px;border-radius:var(--rad);border:1px solid var(--border);object-fit:contain;display:block">'
+      + '</a><div style="font-size:10px;color:var(--text3);margin-top:3px"><i class="ti ti-photo" style="font-size:11px"></i> 사진 답변</div>';
+  }
+  return val;
+}
+
+
+/* ══════════════════════════════════════════
+   출석부 · 팀 구성
+══════════════════════════════════════════ */
+let rosterStudents = [];  // [{id:'1101', name:'홍길동'}, ...]
+let teams = [];           // [[{id,name}, ...], ...]
+
+/* ── CSV/엑셀 파싱 ── */
+async function parseRosterFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('roster-file-name').textContent = file.name;
+  const msg = document.getElementById('roster-parse-msg');
+  msg.style.display = 'none';
+
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  try {
+    if (ext === 'csv') {
+      const text = await file.text();
+      parseCSV(text);
+    } else if (ext === 'xlsx' || ext === 'xls') {
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      parseRows(rows);
+    }
+  } catch(e) {
+    msg.className = 'smsg err'; msg.textContent = '파일 파싱 실패: ' + e.message;
+  }
+}
+
+function parseCSV(text) {
+  const CR = String.fromCharCode(13);
+  const LF = String.fromCharCode(10);
+  const clean = text.split(CR).join('');
+  const lines = clean.split(LF).filter(function(l){ return l.trim(); });
+  const rows = lines.map(function(l){
+    return l.split(',').map(function(c){ return c.trim().replace(/^"|"$/g,''); });
+  });
+  parseRows(rows);
+}
+
+function parseRows(rows) {
+  const msg = document.getElementById('roster-parse-msg');
+  if (!rows || rows.length < 1) { msg.className='smsg err'; msg.textContent='데이터가 없습니다.'; return; }
+
+  // 첫 행이 헤더인지 확인 (숫자가 아니면 헤더로 간주)
+  let startIdx = 0;
+  const firstCell = String(rows[0][0] || '');
+  const hasAlpha = (firstCell.charCodeAt(0) >= 65 && firstCell.charCodeAt(0) <= 122) || firstCell.charCodeAt(0) >= 0xAC00;
+  if (isNaN(firstCell.replace(/[0-9]/g,'').trim()) || firstCell.length === 0 || hasAlpha) {
+    startIdx = 1;
+  }
+
+  const students = [];
+  for (let i = startIdx; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || row.length < 2) continue;
+    const id = String(row[0]||'').trim();
+    const name = String(row[1]||'').trim();
+    if (id && name) students.push({ id, name });
+  }
+
+  if (!students.length) { msg.className='smsg err'; msg.textContent='학번/이름 데이터를 찾을 수 없습니다. 첫 열: 학번, 둘째 열: 이름 형식인지 확인하세요.'; return; }
+
+  rosterStudents = students;
+  msg.className = 'smsg ok'; msg.textContent = '✓ ' + students.length + '명 파싱 완료! 자동 저장 중...';
+  renderRoster();
+  updateTeamPreview();
+  // 자동으로 Supabase에 저장
+  autoSaveRoster(msg);
+}
+
+function renderRoster() {
+  const card = document.getElementById('roster-preview-card');
+  const list = document.getElementById('roster-list');
+  const count = document.getElementById('roster-count');
+  card.style.display = '';
+  document.getElementById('team-gen-card').style.display = '';
+  count.textContent = '(' + rosterStudents.length + '명)';
+  list.innerHTML = rosterStudents.map((s, i) =>
+    '<div style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--bg);border-radius:var(--rad);font-size:12px">'
+    + '<span style="font-weight:600;color:var(--text3);font-size:10px;min-width:36px">' + s.id + '</span>'
+    + '<span style="color:var(--text);font-weight:500">' + s.name + '</span>'
+    + '<button onclick="removeStudent('+i+')" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px" title="삭제">×</button>'
+    + '</div>'
+  ).join('');
+}
+
+function removeStudent(idx) {
+  rosterStudents.splice(idx, 1);
+  renderRoster();
+  updateTeamPreview();
+  autoSaveRoster(null);
+}
+
+function clearRoster() {
+  if (!confirm('명단을 초기화할까요?')) return;
+  rosterStudents = []; teams = [];
+  document.getElementById('roster-preview-card').style.display = 'none';
+  document.getElementById('team-gen-card').style.display = 'none';
+  document.getElementById('team-result-card').style.display = 'none';
+  document.getElementById('roster-file-name').textContent = '선택된 파일 없음';
+  document.getElementById('roster-file').value = '';
+  document.getElementById('roster-parse-msg').style.display = 'none';
+}
+
+function updateTeamPreview() {
+  const mode = document.getElementById('team-mode') && document.getElementById('team-mode').value;
+  const num = parseInt((document.getElementById('team-num') || {}).value) || 2;
+  const label = document.getElementById('team-num-label');
+  const info = document.getElementById('team-preview-info');
+  if (!label || !info) return;
+  if (mode === 'count') {
+    label.textContent = '총 팀 수';
+    const size = Math.ceil(rosterStudents.length / num);
+    info.textContent = rosterStudents.length + '명 → ' + num + '팀 (팀당 약 ' + size + '명)';
+  } else {
+    label.textContent = '팀당 인원 수';
+    const cnt = Math.ceil(rosterStudents.length / num);
+    info.textContent = rosterStudents.length + '명 → 약 ' + cnt + '팀 (팀당 ' + num + '명)';
+  }
+}
+
+/* ── 랜덤 팀 생성 ── */
+function generateTeams() {
+  if (!rosterStudents.length) { alert('학생 명단을 먼저 업로드해주세요.'); return; }
+  const mode = document.getElementById('team-mode').value;
+  const num = parseInt(document.getElementById('team-num').value) || 2;
+
+  // 셔플
+  const shuffled = [...rosterStudents].sort(() => Math.random() - 0.5);
+
+  let teamSize, teamCount;
+  if (mode === 'count') {
+    teamCount = num;
+    teamSize = Math.ceil(shuffled.length / teamCount);
+  } else {
+    teamSize = num;
+    teamCount = Math.ceil(shuffled.length / teamSize);
+  }
+
+  teams = [];
+  for (let i = 0; i < teamCount; i++) {
+    const team = shuffled.slice(i * teamSize, (i+1) * teamSize);
+    if (team.length) teams.push(team);
+  }
+
+  renderTeams();
+}
+
+function renderTeams() {
+  const card = document.getElementById('team-result-card');
+  const list = document.getElementById('team-result-list');
+  card.style.display = '';
+  list.innerHTML = '';
+
+  teams.forEach(function(team, ti) {
+    const teamDiv = document.createElement('div');
+    teamDiv.className = 'team-drop-zone';
+    teamDiv.dataset.team = ti;
+    teamDiv.style.cssText = 'background:var(--bg);border:2px solid var(--border);border-radius:var(--rad-lg);padding:12px;min-height:80px;transition:border-color .15s';
+
+    // 팀 헤더
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-size:12px;font-weight:700;color:var(--primary);margin-bottom:8px;display:flex;align-items:center;gap:6px';
+    hdr.innerHTML = '<span style="width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px">'+(ti+1)+'</span>'
+      + '팀 '+(ti+1)+' <span id="team-count-'+ti+'" style="font-weight:400;color:var(--text3);font-size:11px">('+team.length+'명)</span>';
+    teamDiv.appendChild(hdr);
+
+    // 팀원 목록
+    team.forEach(function(s, si) {
+      const item = document.createElement('div');
+      item.className = 'student-drag-item';
+      item.draggable = true;
+      item.dataset.team = ti;
+      item.dataset.student = si;
+      item.style.cssText = 'display:flex;align-items:center;gap:6px;padding:7px 10px;background:var(--card);border:1px solid var(--border);border-radius:var(--rad);margin-bottom:5px;cursor:grab;user-select:none;transition:all .15s;font-size:12px';
+      item.innerHTML = '<i class="ti ti-grip-vertical" style="font-size:14px;color:var(--text3);cursor:grab"></i>'
+        + '<span style="color:var(--text3);font-size:10px;min-width:36px">'+s.id+'</span>'
+        + '<span style="font-weight:600;flex:1">'+s.name+'</span>';
+
+      // 드래그 이벤트
+      item.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('fromTeam', ti);
+        e.dataTransfer.setData('fromStudent', si);
+        e.dataTransfer.effectAllowed = 'move';
+        item.style.opacity = '0.4';
+        item.style.transform = 'scale(0.95)';
+      });
+      item.addEventListener('dragend', function() {
+        item.style.opacity = '';
+        item.style.transform = '';
+        document.querySelectorAll('.team-drop-zone').forEach(function(z) {
+          z.style.borderColor = 'var(--border)';
+          z.style.background = 'var(--bg)';
+        });
+      });
+
+      teamDiv.appendChild(item);
+    });
+
+    // 드롭 이벤트
+    teamDiv.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      teamDiv.style.borderColor = 'var(--primary)';
+      teamDiv.style.background = 'var(--primary-light)';
+    });
+    teamDiv.addEventListener('dragleave', function(e) {
+      if (!teamDiv.contains(e.relatedTarget)) {
+        teamDiv.style.borderColor = 'var(--border)';
+        teamDiv.style.background = 'var(--bg)';
+      }
+    });
+    teamDiv.addEventListener('drop', function(e) {
+      e.preventDefault();
+      teamDiv.style.borderColor = 'var(--border)';
+      teamDiv.style.background = 'var(--bg)';
+      const fromTeam = parseInt(e.dataTransfer.getData('fromTeam'));
+      const fromStudent = parseInt(e.dataTransfer.getData('fromStudent'));
+      const toTeam = parseInt(teamDiv.dataset.team);
+      if (fromTeam === toTeam) return;
+      const student = teams[fromTeam][fromStudent];
+      teams[fromTeam].splice(fromStudent, 1);
+      teams[toTeam].push(student);
+      // 빈 팀 제거
+      teams = teams.filter(function(t) { return t.length > 0; });
+      renderTeams();
+    });
+
+    list.appendChild(teamDiv);
+  });
+
+  // 드래그 힌트
+  const hint = document.createElement('div');
+  hint.style.cssText = 'grid-column:1/-1;text-align:center;font-size:11px;color:var(--text3);margin-top:4px;display:flex;align-items:center;justify-content:center;gap:5px';
+  hint.innerHTML = '<i class="ti ti-drag-drop" style="font-size:13px"></i> 팀원을 다른 팀 칸으로 드래그하면 이동됩니다';
+  list.appendChild(hint);
+}
+
+
+/* ── 팀원 이동 ── */
+function moveStudent(fromTeam, studentIdx, direction) {
+  const student = teams[fromTeam][studentIdx];
+  const toTeam = fromTeam + direction;
+  if (toTeam < 0 || toTeam >= teams.length) return;
+  teams[fromTeam].splice(studentIdx, 1);
+  teams[toTeam].push(student);
+  if (!teams[fromTeam].length) teams.splice(fromTeam, 1);
+  renderTeams();
+}
+
+/* ── Supabase 저장/로드 ── */
+async function saveRosterToDb() {
+  await autoSaveRoster(null);
+}
+
+async function saveTeamToDb() {
+  if (!sb) { alert('DB가 연결되지 않았습니다.'); return; }
+  if (!teams.length) { alert('팀을 먼저 생성해주세요.'); return; }
+  try {
+    await sb.from('settings').upsert({ key:'teams', value: JSON.stringify(teams) }, { onConflict:'key' });
+    alert('✓ 팀 구성이 저장됐습니다!');
+  } catch(e) { alert('저장 실패: ' + e.message); }
+}
+
+async function loadRosterFromDb() {
+  if (!sb) { console.warn('loadRosterFromDb: sb 없음'); return; }
+  try {
+    const { data: rd, error: re } = await sb.from('settings').select('value').eq('key','roster').maybeSingle();
+    if (re) throw re;
+    if (rd && rd.value) {
+      const parsed = JSON.parse(rd.value);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        rosterStudents = parsed;
+        renderRoster();
+        updateTeamPreview();
+        // 저장 상태 표시
+        const statusEl = document.getElementById('roster-save-status');
+        if (statusEl) {
+          statusEl.textContent = '✓ 저장된 명단 불러옴 (' + rosterStudents.length + '명)';
+          statusEl.style.color = '#27500A';
+          statusEl.style.display = 'inline';
+        }
+      }
+    }
+    const { data: td, error: te } = await sb.from('settings').select('value').eq('key','teams').maybeSingle();
+    if (!te && td && td.value) {
+      const parsedTeams = JSON.parse(td.value);
+      if (Array.isArray(parsedTeams) && parsedTeams.length > 0) {
+        teams = parsedTeams;
+        renderTeams();
+      }
+    }
+  } catch(e) { console.error('명단 로드 실패:', e); }
+}
+
+/* ── 팀 엑셀 다운로드 ── */
+function dlTeamExcel() {
+  if (!teams.length) { alert('팀을 먼저 생성해주세요.'); return; }
+  const rows = [['팀', '학번', '이름']];
+  teams.forEach((team, ti) => {
+    team.forEach(s => rows.push(['팀' + (ti+1), s.id, s.name]));
+    rows.push(['','','']);
+  });
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:8},{wch:12},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, ws, '팀구성');
+  XLSX.writeFile(wb, '팀구성_' + new Date().toLocaleDateString('ko-KR').split('.').join('-').replace(/ /g,'') + '.xlsx');
+}
+
+
+async function autoSaveRoster(msgEl) {
+  const saveStatusEl = document.getElementById('roster-save-status');
+  if (saveStatusEl) {
+    saveStatusEl.textContent = '저장 중...';
+    saveStatusEl.style.color = 'var(--text3)';
+    saveStatusEl.style.display = 'inline';
+  }
+  if (!sb) {
+    if (saveStatusEl) { saveStatusEl.textContent = 'DB 미연결 — 저장 안 됨'; saveStatusEl.style.color = 'var(--sport)'; }
+    return;
+  }
+  try {
+    const val = JSON.stringify(rosterStudents);
+    const { error } = await sb.from('settings').upsert({ key: 'roster', value: val }, { onConflict: 'key' });
+    if (error) throw error;
+    const now = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    if (saveStatusEl) {
+      saveStatusEl.textContent = '✓ Supabase 저장 완료 (' + now + ')';
+      saveStatusEl.style.color = '#27500A';
+    }
+    if (msgEl) msgEl.textContent = '✓ ' + rosterStudents.length + '명 파싱 완료! Supabase 저장 완료';
+  } catch(e) {
+    if (saveStatusEl) {
+      saveStatusEl.textContent = '✗ 저장 실패: ' + e.message;
+      saveStatusEl.style.color = 'var(--sport)';
+    }
+    if (msgEl) msgEl.textContent = '파싱 완료, 저장 실패: ' + e.message;
+  }
+
+
+
+}
+
+function previewEditPhoto(idx, input) {
+  const preview = document.getElementById('ws-eq'+idx+'-preview');
+  if (!preview || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    preview.innerHTML = '<img src="'+e.target.result+'" style="max-width:100%;max-height:180px;border-radius:var(--rad);border:1px solid var(--border);object-fit:contain;display:block">'
+      + '<div style="font-size:11px;color:var(--accent);margin-top:4px"><i class="ti ti-check" style="font-size:11px"></i> 새 사진이 선택됐습니다</div>';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+</script>
+
+<!-- API 키 설정 모달 -->
+<div id="api-key-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9998;align-items:center;justify-content:center">
+  <div style="background:var(--card);border-radius:var(--rad-xl);padding:28px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px">
+        <i class="ti ti-key" style="font-size:18px;color:var(--primary)"></i>AI API 키 설정
+      </div>
+      <button onclick="closeApiKeyModal()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text3);padding:4px">×</button>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:18px;line-height:1.7;background:var(--bg);padding:10px 13px;border-radius:var(--rad)">
+      입력한 API 키는 Supabase에 암호화 저장되며, 다른 선생님도 같은 키로 세특을 생성할 수 있습니다.
+    </div>
+
+    <!-- Gemini -->
+    <div style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <label style="font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:5px">
+          <i class="ti ti-stars" style="font-size:13px;color:#4285F4"></i>Gemini API 키
+        </label>
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:10px;color:var(--primary)">키 발급 →</a>
+      </div>
+      <div style="display:flex;gap:7px">
+        <input class="fi" id="key-gemini" type="password" placeholder="AIza..." style="flex:1;font-family:monospace;font-size:12px">
+        <button class="abtn" onclick="toggleKeyVis('key-gemini')" style="font-size:11px;flex-shrink:0"><i class="ti ti-eye"></i></button>
+      </div>
+    </div>
+
+    <!-- ChatGPT -->
+    <div style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <label style="font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:5px">
+          <i class="ti ti-message-circle" style="font-size:13px;color:#10A37F"></i>ChatGPT API 키
+        </label>
+        <a href="https://platform.openai.com/api-keys" target="_blank" style="font-size:10px;color:var(--primary)">키 발급 →</a>
+      </div>
+      <div style="display:flex;gap:7px">
+        <input class="fi" id="key-gpt" type="password" placeholder="sk-..." style="flex:1;font-family:monospace;font-size:12px">
+        <button class="abtn" onclick="toggleKeyVis('key-gpt')" style="font-size:11px;flex-shrink:0"><i class="ti ti-eye"></i></button>
+      </div>
+    </div>
+
+    <!-- Claude -->
+    <div style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <label style="font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:5px">
+          <i class="ti ti-robot" style="font-size:13px;color:#CC785C"></i>Claude API 키
+        </label>
+        <a href="https://console.anthropic.com/api-keys" target="_blank" style="font-size:10px;color:var(--primary)">키 발급 →</a>
+      </div>
+      <div style="display:flex;gap:7px">
+        <input class="fi" id="key-claude" type="password" placeholder="sk-ant-..." style="flex:1;font-family:monospace;font-size:12px">
+        <button class="abtn" onclick="toggleKeyVis('key-claude')" style="font-size:11px;flex-shrink:0"><i class="ti ti-eye"></i></button>
+      </div>
+    </div>
+
+    <div id="api-key-msg" class="smsg" style="margin-bottom:12px"></div>
+    <div style="display:flex;gap:8px">
+      <button class="abtn p" onclick="saveApiKeys()" style="flex:1;justify-content:center;padding:9px">
+        <i class="ti ti-device-floppy"></i> 저장
+      </button>
+      <button class="abtn" onclick="closeApiKeyModal()" style="flex-shrink:0">취소</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
